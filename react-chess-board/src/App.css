@@ -1,0 +1,70 @@
+.App {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 98vh;
+}
+
+.board {
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	grid-template-rows: repeat(8, 1fr);
+	row-gap: 0.4rem;
+	column-gap: 0.4rem;
+	width: fit-content;
+}
+
+.board-square {
+	width: 3rem;
+	height: 3rem;
+	background-color: rgb(63, 63, 63);
+	color: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.board-square:nth-child(63n-62),
+.board-square:nth-child(63n-60),
+.board-square:nth-child(63n-58),
+.board-square:nth-child(63n-56),
+.board-square:nth-child(63n-53),
+.board-square:nth-child(63n-51),
+.board-square:nth-child(63n-49),
+.board-square:nth-child(63n-47),
+.board-square:nth-child(63n-46), 
+.board-square:nth-child(63n-44),
+.board-square:nth-child(63n-42),
+.board-square:nth-child(63n-40),
+.board-square:nth-child(63n-37),
+.board-square:nth-child(63n-35),
+.board-square:nth-child(63n-33),
+.board-square:nth-child(63n-31),
+.board-square:nth-child(63n-30),
+.board-square:nth-child(63n-28),
+.board-square:nth-child(63n-26),
+.board-square:nth-child(63n-24),
+.board-square:nth-child(63n-21),
+.board-square:nth-child(63n-19),
+.board-square:nth-child(63n-17),
+.board-square:nth-child(63n-15),
+.board-square:nth-child(63n-14),
+.board-square:nth-child(63n-12),
+.board-square:nth-child(63n-12),
+.board-square:nth-child(63n-10),
+.board-square:nth-child(63n-8),
+.board-square:nth-child(63n-5),
+.board-square:nth-child(63n-3),
+.board-square:nth-child(63n-1)
+{
+	background-color: rgb(170, 170, 170);
+	color: black;
+}
+
+.board-square--selected {
+	background-color: rgb(98, 98, 255);
+}
+
+.piece-0{
+	background-image: url(./assets/pieces/bKnight.png);
+}
