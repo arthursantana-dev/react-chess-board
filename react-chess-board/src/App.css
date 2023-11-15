@@ -62,9 +62,9 @@
 }
 
 .board-square--selected {
-	background-color: rgb(98, 98, 255);
+	background-color: rgb(98, 98, 255) !important;
 }
 
-.piece-0{
-	background-image: url(./assets/pieces/bKnight.png);
+img.img-piece {
+	width: 3rem;
 }
