@@ -24,10 +24,16 @@ function App() {
 	const boardPieces = [none, wPawn, wKnight, wBishop, wRook, wQueen, wKing, bPawn, bKnight, bBishop, bRook, bQueen, bKing]
 	//                     0     1       2       3        4       5       6      7     8        9        10     11      12
 
+	const [selectedPieceCoordinates, setSelectedPieceCoordinates] = useState(0) 
+	//                                                                 x (row), y (column)
+
+	// const
+
 
 	useEffect(() => {
 		updateBoardSquare(3, 4, 6, board, setBoard)
 		updateBoardSquare(1, 3, 5, board, setBoard)
+		updateBoardSquare(1, 7, 8, board, setBoard)
 	}, [])
 
 	const updateBoardSquare = (row, column, newValue, boardArray, setBoardArray) => {
@@ -50,15 +56,41 @@ function App() {
 		setBoardSelectedSquares(Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => false)))
 	}
 
+	const updatePiecePosition = (pieceValue, prevRow, precColumn, newRow, newColumn) => {
+		updateBoardSquare(prevRow, precColumn, 0, board, setBoard)
+		updateBoardSquare(newRow, newColumn, pieceValue, board, setBoard)
+	}
+
 	const handleSquareSelection = (i, j) => {
 		// i -> row
 		// j -> column
 
-		const isSquare = 0
+		const boardSquareValue = board[i][j]
+		// console.log(`${i} - ${j} -> ${boardPieces.indexOf(boardPieces[boardSquareValue])}`);
+
+		if(selectedPieceCoordinates != 0){
+			if (!boardSelectedSquares[i][j]) return
+
+			updatePiecePosition(board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]], selectedPieceCoordinates[0], selectedPieceCoordinates[1], i, j)
+			setSelectedPieceCoordinates(0)
+		} else {
+			const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
+		
+			if (isPieceSelected) {
+				setSelectedPieceCoordinates([i, j])
+			}
+		}
+
+		// if(selectedPieceCoordinates[0] != i || selectedPieceCoordinates[1] != j){
+		// 	updatePiecePosition(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]], selectedPieceCoordinates[0], selectedPieceCoordinates[1], i, j)
+		// }
+
 
 		clearBoardSelection()
 
 		const pieceValue = boardPieces[board[i][j]]
+
+		
 
 		// updateBoardSquare(i, j, prevSquareValue + 1, board, setBoard)
 		updateBoardSquare(i, j, true, boardSelectedSquares, setBoardSelectedSquares)
@@ -237,6 +269,16 @@ function App() {
 
 	return (
 		<div className="App">
+			<div className="board-column">
+				<p>h</p>
+				<p>g</p>
+				<p>f</p>
+				<p>e</p>
+				<p>d</p>
+				<p>c</p>
+				<p>b</p>
+				<p>a</p>
+			</div>
 			<div className='board'>
 				{
 					board.map((r, i) => {
