@@ -2,6 +2,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex-direction: column;
 	height: 98vh;
 }
 
@@ -74,10 +75,22 @@ img.img-piece {
     flex-direction: column;
 	font-size: 1rem;
 	text-transform: uppercase;
+	margin-bottom: 48px;
+	margin-right: 0.2rem;
 }
 
 .board-column p {
 	padding-inline: 0.3rem;
 }
 
+.board-row {
+	display: flex;
+	justify-content: space-around;
+}
 
+.board-container {
+	display: flex;
+}
+
+.game-notation-container {
+}

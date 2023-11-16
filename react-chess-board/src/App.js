@@ -23,11 +23,14 @@ function App() {
 
 	const boardPieces = [none, wPawn, wKnight, wBishop, wRook, wQueen, wKing, bPawn, bKnight, bBishop, bRook, bQueen, bKing]
 	//                     0     1       2       3        4       5       6      7     8        9        10     11      12
+	const boardPiecesNotation = ['', '', 'N', 'B', 'R', 'Q', 'K', '', 'N', 'B', 'R', 'Q', 'K']
 
 	const [selectedPieceCoordinates, setSelectedPieceCoordinates] = useState(0) 
 	//                                                                 x (row), y (column)
 
-	// const
+	const [turn, setTurn] = useState(true) //true - white; false - black
+
+	const [gameNotation, setGameNotation] = useState([])
 
 
 	useEffect(() => {
@@ -65,18 +68,42 @@ function App() {
 		// i -> row
 		// j -> column
 
+		console.log('hss');
+
 		const boardSquareValue = board[i][j]
+		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
+
 		// console.log(`${i} - ${j} -> ${boardPieces.indexOf(boardPieces[boardSquareValue])}`);
 
-		if(selectedPieceCoordinates != 0){
-			if (!boardSelectedSquares[i][j]) return
 
+		if(selectedPieceCoordinates != 0){
+			if (!boardSelectedSquares[i][j]) {
+				clearBoardSelection()
+				return
+			}
+
+			if(selectedPieceCoordinates[0] == i && selectedPieceCoordinates[1] == j) return
+
+			setTurn(!turn)
+			// if(selectedPieceCoordinates == [i, j]) return
 			updatePiecePosition(board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]], selectedPieceCoordinates[0], selectedPieceCoordinates[1], i, j)
+
+			const pieceValue = boardPieces.indexOf(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]])
+
+			setGameNotation([...gameNotation, `${boardPiecesNotation[pieceValue]}${String.fromCharCode(65 + j).toLowerCase()}${8 - i}`])
+
 			setSelectedPieceCoordinates(0)
+			clearBoardSelection()
+			
+			return
 		} else {
-			const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
-		
+			
+
 			if (isPieceSelected) {
+
+				const pieceValue = boardPieces.indexOf(boardPieces[boardSquareValue])
+				if (([1,2,3,4,5,6].includes(pieceValue) && !turn) || ([7,8,9,10,11,12].includes(pieceValue) && turn)) return
+
 				setSelectedPieceCoordinates([i, j])
 			}
 		}
@@ -89,8 +116,6 @@ function App() {
 		clearBoardSelection()
 
 		const pieceValue = boardPieces[board[i][j]]
-
-		
 
 		// updateBoardSquare(i, j, prevSquareValue + 1, board, setBoard)
 		updateBoardSquare(i, j, true, boardSelectedSquares, setBoardSelectedSquares)
@@ -269,28 +294,71 @@ function App() {
 
 	return (
 		<div className="App">
-			<div className="board-column">
-				<p>h</p>
-				<p>g</p>
-				<p>f</p>
-				<p>e</p>
-				<p>d</p>
-				<p>c</p>
-				<p>b</p>
-				<p>a</p>
+			<div className="board-container">
+				<div className="board-column">
+					<p>8</p>
+					<p>7</p>
+					<p>6</p>
+					<p>5</p>
+					<p>4</p>
+					<p>3</p>
+					<p>2</p>
+					<p>1</p>
+				</div>
+				<div className="col">
+					<div className='board'>
+						{
+							board.map((r, i) => {
+								return r.map((s, j) => {
+									return <div className={`board-square ${boardSelectedSquares[i][j]? 'board-square--selected' : ''}`}onClick={() => handleSquareSelection(i, j)}
+										key={i * 8 + j}
+										column={j}
+										row={i}>
+											<img src={boardPieces[board[i][j]]} className='img-piece'/>
+									</div>
+								})
+							})
+						}
+					</div>
+					<div className='board-row'>
+						<p>
+							a
+						</p>
+						<p>
+							b
+						</p>
+						<p>
+							c
+						</p>
+						<p>
+							d
+						</p>
+						<p>
+							e
+						</p>
+						<p>
+							f
+						</p>
+						<p>
+							g
+						</p>
+						<p>
+							h
+						</p>
+					</div>
+				</div>
 			</div>
-			<div className='board'>
+			<div className='game-notation-container'>
 				{
-					board.map((r, i) => {
-						return r.map((s, j) => {
-							return <div className={`board-square ${boardSelectedSquares[i][j]? 'board-square--selected' : ''}`}onClick={() => handleSquareSelection(i, j)}
-								key={i * 8 + j}
-								column={j}
-								row={i}>
-									<img src={boardPieces[board[i][j]]} className='img-piece'/>
-							</div>
-						})
-					})
+					gameNotation.map((r, i) => <>
+					{
+						(i + 1)%2 != 0? <span>{(i + 2)/2}. </span> : ''
+					}
+					<span style={{marginRight: 7}} key={i}>{r}</span>
+					{
+						(i + 1)%2 == 0? <br/> : ''
+					}
+					</>) 
 				}
 			</div>
 		</div>
