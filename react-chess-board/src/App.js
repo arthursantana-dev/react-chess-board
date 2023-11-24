@@ -32,11 +32,11 @@ function App() {
 
 	const [gameNotation, setGameNotation] = useState([])
 
-
+	// Starting position
 	useEffect(() => {
 		updateBoardSquare(3, 4, 6, board, setBoard)
 		updateBoardSquare(1, 3, 5, board, setBoard)
-		updateBoardSquare(1, 7, 8, board, setBoard)
+		updateBoardSquare(1, 7, 9, board, setBoard)
 	}, [])
 
 	const updateBoardSquare = (row, column, newValue, boardArray, setBoardArray) => {
@@ -64,6 +64,8 @@ function App() {
 		updateBoardSquare(newRow, newColumn, pieceValue, board, setBoard)
 	}
 
+	const [hasPieceBeenSelected, setHasPieceBeenSelected] = useState(false)
+
 	const handleSquareSelection = (i, j) => {
 		// i -> row
 		// j -> column
@@ -73,10 +75,30 @@ function App() {
 		const boardSquareValue = board[i][j]
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
 
+		// if(!hasPieceBeenSelected && isPieceSelected){
+		// 	setHasPieceBeenSelected(isPieceSelected)
+		// }
+		
+
+
+
+		// console.log(`${turn} - ${isPieceSelected}`);
+		console.log(`${turn} - ${selectedPieceCoordinates == 0 && isPieceSelected}`);
+
+		console.log(hasPieceBeenSelected);
+
+		// if(!isPieceSelected){
+		// 	setTurn(!turn)
+		// 	return
+		// }
+
+
 		// console.log(`${i} - ${j} -> ${boardPieces.indexOf(boardPieces[boardSquareValue])}`);
 
 
 		if(selectedPieceCoordinates != 0){
+			
+
 			if (!boardSelectedSquares[i][j]) {
 				clearBoardSelection()
 				return
