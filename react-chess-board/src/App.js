@@ -33,16 +33,58 @@ function App() {
 	const [gameNotation, setGameNotation] = useState([])
 
 	// Starting position
+	const boardStartingPosition = () => {
+		clearBoard()
+		setTurn(true)
+		setGameNotation([])
+
+		updateBoardSquare(0, 0, 10, board, setBoard)
+		updateBoardSquare(0, 1, 8, board, setBoard)
+		updateBoardSquare(0, 2, 9, board, setBoard)
+		updateBoardSquare(0, 3, 11, board, setBoard)
+		updateBoardSquare(0, 4, 12, board, setBoard)
+		updateBoardSquare(0, 5, 9, board, setBoard)
+		updateBoardSquare(0, 6, 8, board, setBoard)
+		updateBoardSquare(0, 7, 10, board, setBoard)
+
+	
+		updateBoardSquare(1, 0, 7, board, setBoard)
+		updateBoardSquare(1, 1, 7, board, setBoard)
+		updateBoardSquare(1, 2, 7, board, setBoard)
+		updateBoardSquare(1, 3, 7, board, setBoard)
+		updateBoardSquare(1, 4, 7, board, setBoard)
+		updateBoardSquare(1, 5, 7, board, setBoard)
+		updateBoardSquare(1, 6, 7, board, setBoard)
+		updateBoardSquare(1, 7, 7, board, setBoard)
+
+		updateBoardSquare(6, 0, 1, board, setBoard)
+		updateBoardSquare(6, 1, 1, board, setBoard)
+		updateBoardSquare(6, 2, 1, board, setBoard)
+		updateBoardSquare(6, 3, 1, board, setBoard)
+		updateBoardSquare(6, 4, 1, board, setBoard)
+		updateBoardSquare(6, 5, 1, board, setBoard)
+		updateBoardSquare(6, 6, 1, board, setBoard)
+		updateBoardSquare(6, 7, 1, board, setBoard)
+
+		updateBoardSquare(7, 0, 4, board, setBoard)
+		updateBoardSquare(7, 1, 2, board, setBoard)
+		updateBoardSquare(7, 2, 3, board, setBoard)
+		updateBoardSquare(7, 3, 5, board, setBoard)
+		updateBoardSquare(7, 4, 6, board, setBoard)
+		updateBoardSquare(7, 5, 3, board, setBoard)
+		updateBoardSquare(7, 6, 2, board, setBoard)
+		updateBoardSquare(7, 7, 4, board, setBoard)
+	}
+
 	useEffect(() => {
-		updateBoardSquare(3, 4, 6, board, setBoard)
-		updateBoardSquare(1, 3, 5, board, setBoard)
-		updateBoardSquare(1, 7, 9, board, setBoard)
+		boardStartingPosition()
 	}, [])
 
 	const updateBoardSquare = (row, column, newValue, boardArray, setBoardArray) => {
-		// if(boardArray == boardSelectedSquares){
-		// 	if (board[row][column] != 0) return
-		// }
+		if(boardArray == boardSelectedSquares){
+			console.log(`${row}, ${column}`);
+			console.log(`${boardPieces.indexOf(boardPieces[board[row][column]])}`);
+		}
 
 		setBoardArray(boardArray => {
 			const newMatrix = boardArray.map((currentRow, rowIndex) =>
@@ -59,67 +101,55 @@ function App() {
 		setBoardSelectedSquares(Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => false)))
 	}
 
+	const clearBoard = () => {
+		board.forEach((r, i) => {
+			r.forEach((c, j) => {
+				updateBoardSquare(i, j, 0, board, setBoard)
+			})
+		})
+	}
+
 	const updatePiecePosition = (pieceValue, prevRow, precColumn, newRow, newColumn) => {
 		updateBoardSquare(prevRow, precColumn, 0, board, setBoard)
 		updateBoardSquare(newRow, newColumn, pieceValue, board, setBoard)
 	}
 
-	const [hasPieceBeenSelected, setHasPieceBeenSelected] = useState(false)
-
 	const handleSquareSelection = (i, j) => {
 		// i -> row
 		// j -> column
 
-		console.log('hss');
-
 		const boardSquareValue = board[i][j]
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
 
-		// if(!hasPieceBeenSelected && isPieceSelected){
-		// 	setHasPieceBeenSelected(isPieceSelected)
-		// }
+
+		// alert(`${selectedPieceCoordinates} : ${hasPieceBeenSelected} -> ${boardSquareValue}`)
+
+		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {
+			setSelectedPieceCoordinates(0)
+			clearBoardSelection()
+			return
+		}
 		
 
-
-
-		// console.log(`${turn} - ${isPieceSelected}`);
-		console.log(`${turn} - ${selectedPieceCoordinates == 0 && isPieceSelected}`);
-
-		console.log(hasPieceBeenSelected);
-
-		// if(!isPieceSelected){
-		// 	setTurn(!turn)
-		// 	return
-		// }
-
-
-		// console.log(`${i} - ${j} -> ${boardPieces.indexOf(boardPieces[boardSquareValue])}`);
-
-
 		if(selectedPieceCoordinates != 0){
-			
-
-			if (!boardSelectedSquares[i][j]) {
-				clearBoardSelection()
-				return
-			}
+	
 
 			if(selectedPieceCoordinates[0] == i && selectedPieceCoordinates[1] == j) return
 
 			setTurn(!turn)
+
 			// if(selectedPieceCoordinates == [i, j]) return
 			updatePiecePosition(board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]], selectedPieceCoordinates[0], selectedPieceCoordinates[1], i, j)
 
 			const pieceValue = boardPieces.indexOf(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]])
 
-			setGameNotation([...gameNotation, `${boardPiecesNotation[pieceValue]}${String.fromCharCode(65 + j).toLowerCase()}${8 - i}`])
+			setGameNotation([...gameNotation, `${boardPiecesNotation[pieceValue]}${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
 
 			setSelectedPieceCoordinates(0)
 			clearBoardSelection()
 			
 			return
 		} else {
-			
 
 			if (isPieceSelected) {
 
@@ -149,6 +179,10 @@ function App() {
 		switch (pieceValue) {
 			case wPawn:
 				recursiveSelection(i, j, 'up', 1)
+				break;
+
+			case bPawn:
+				recursiveSelection(i, j, 'down', 3)
 				break;
 
 			case wKnight:
@@ -196,9 +230,6 @@ function App() {
 	}
 
 	const recursiveSelection = (i, j, direction, span = 0) => {
-		// if(board[i][j]){
-		// 	if(boardPieces[i][j] != 0) return
-		// }else return
 
 		if (span == 1) {
 			updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
@@ -220,7 +251,9 @@ function App() {
 			updateBoardSquare(i+ 1, j+2, true, boardSelectedSquares, setBoardSelectedSquares)
 			updateBoardSquare(i+ 1, j-2, true, boardSelectedSquares, setBoardSelectedSquares)
 			return
-		} else if (span == 6){
+		} else if (span == 3) {
+			updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)
+		} if (span == 6){
 			updateBoardSquare(i-1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
 			updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
 			updateBoardSquare(i-1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
@@ -316,6 +349,7 @@ function App() {
 
 	return (
 		<div className="App">
+			
 			<div className="board-container">
 				<div className="board-column">
 					<p>8</p>
@@ -342,6 +376,7 @@ function App() {
 							})
 						}
 					</div>
+					
 					<div className='board-row'>
 						<p>
 							a
@@ -368,6 +403,9 @@ function App() {
 							h
 						</p>
 					</div>
+					<button onClick={() => boardStartingPosition()}>
+						Starting position
+					</button>
 				</div>
 			</div>
 			<div className='game-notation-container'>

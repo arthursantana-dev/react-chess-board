@@ -2,7 +2,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	flex-direction: column;
+	flex-direction: row;
 	height: 98vh;
 }
 
@@ -93,4 +93,5 @@ img.img-piece {
 }
 
 .game-notation-container {
+	padding: 3rem;
 }
