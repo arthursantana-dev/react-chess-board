@@ -81,10 +81,25 @@ function App() {
 	}, [])
 
 	const updateBoardSquare = (row, column, newValue, boardArray, setBoardArray) => {
-		if(boardArray == boardSelectedSquares){
-			console.log(`${row}, ${column}`);
-			console.log(`${boardPieces.indexOf(boardPieces[board[row][column]])}`);
-		}
+		
+		// if(boardArray == boardSelectedSquares){
+		// 	if(boardPieces[board[row][column]] == undefined) return
+		// }
+
+		const rightLimit = column >= 8
+		const leftLimit = column <= -1
+		const upLimit = row <= -1
+		const downLimit = row >= 8
+
+		if(rightLimit || leftLimit || upLimit || downLimit) return
+
+		const theresPiece = boardPieces.indexOf(boardPieces[board[row][column]]) != 0
+
+		const theresWhitePiece = [1, 2, 3, 4, 5, 6].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
+
+		const theresBlackPiece = [7, 8, 9, 10, 11, 12].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
+
+		console.log(`${theresWhitePiece}, ${theresBlackPiece}, ${turn? 'white' : 'black'}`);
 
 		setBoardArray(boardArray => {
 			const newMatrix = boardArray.map((currentRow, rowIndex) =>
@@ -233,10 +248,6 @@ function App() {
 
 		if (span == 1) {
 			updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
-
-			//capture
-			// updateBoardSquare(i-1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
-			// updateBoardSquare(i-1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
 			return
 		} else if (span == 2) {
 			updateBoardSquare(i-2, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
@@ -253,7 +264,8 @@ function App() {
 			return
 		} else if (span == 3) {
 			updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)
-		} if (span == 6){
+			return
+		} else if (span == 6){
 			updateBoardSquare(i-1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
 			updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
 			updateBoardSquare(i-1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
@@ -265,10 +277,10 @@ function App() {
 			return
 		}
 
-		const rightLimit = j == 8
-		const leftLimit = j == -1
-		const upLimit = i == -1
-		const downLimit = i == 8
+		const rightLimit = j >= 8
+		const leftLimit = j <= -1
+		const upLimit = i <= -1
+		const downLimit = i >= 8
 
 		switch (direction) {
 			case 'right':
