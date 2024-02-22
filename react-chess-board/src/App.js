@@ -432,7 +432,7 @@ function App() {
 							h
 						</p>
 					</div>
-					<button onClick={() => boardStartingPosition()}>
+					<button className='button' onClick={() => boardStartingPosition()}>
 						Starting position
 					</button>
 				</div>

@@ -25,6 +25,12 @@
 	align-items: center;
 }
 
+.button {
+	padding: 10px;
+	border-radius: 0.25rem;
+	border: 1px solid gray;
+}
+
 .board-square:nth-child(63n-62),
 .board-square:nth-child(63n-60),
 .board-square:nth-child(63n-58),
