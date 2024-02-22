@@ -32,6 +32,18 @@ function App() {
 
 	const [gameNotation, setGameNotation] = useState([])
 
+	const isPieceWhite = (i, j) => { //1 - white; 0 - black
+		const pieceValue = board[i][j]
+
+		console.log(`-------------------- piece value: ${pieceValue}`);
+
+		if (pieceValue == 0) return -1
+
+		if(pieceValue <= 6) return 1
+
+		return 0
+	}
+
 	// Starting position
 	const boardStartingPosition = () => {
 		clearBoard()
@@ -86,14 +98,14 @@ function App() {
 		// 	if(boardPieces[board[row][column]] == undefined) return
 		// }
 
+
 		const rightLimit = column >= 8
 		const leftLimit = column <= -1
 		const upLimit = row <= -1
 		const downLimit = row >= 8
 
 		if(rightLimit || leftLimit || upLimit || downLimit) return
-
-		const theresPiece = boardPieces.indexOf(boardPieces[board[row][column]]) != 0
+		if((turn && isPieceWhite(row, column) == 1 ) || (!turn && isPieceWhite(row, column) == 0)) return
 
 		const theresWhitePiece = [1, 2, 3, 4, 5, 6].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
 
@@ -246,36 +258,41 @@ function App() {
 
 	const recursiveSelection = (i, j, direction, span = 0) => {
 
-		if (span == 1) {
-			updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
-			return
-		} else if (span == 2) {
-			updateBoardSquare(i-2, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i-2, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
-			
-			updateBoardSquare(i-1, j+2, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i-1, j-2, true, boardSelectedSquares, setBoardSelectedSquares)
+		switch (span){
+			case 1:
+				updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
+				break
 
-			updateBoardSquare(i+2, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i+2, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
-			
-			updateBoardSquare(i+ 1, j+2, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i+ 1, j-2, true, boardSelectedSquares, setBoardSelectedSquares)
-			return
-		} else if (span == 3) {
-			updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)
-			return
-		} else if (span == 6){
-			updateBoardSquare(i-1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i-1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i+1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)
-			updateBoardSquare(i+1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
-			return
-		}
+			case 2:
+					
+				updateBoardSquare(i-2, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i-2, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
+				
+				updateBoardSquare(i-1, j+2, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i-1, j-2, true, boardSelectedSquares, setBoardSelectedSquares)
+
+				updateBoardSquare(i+2, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i+2, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
+				
+				updateBoardSquare(i+ 1, j+2, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i+ 1, j-2, true, boardSelectedSquares, setBoardSelectedSquares)
+				break
+
+			case 3:
+				updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)
+				break
+
+			case 6:
+				updateBoardSquare(i-1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i-1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i+1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)
+				updateBoardSquare(i+1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
+				break
+		} 
 
 		const rightLimit = j >= 8
 		const leftLimit = j <= -1
