@@ -15,7 +15,7 @@ import bRook from './assets/pieces/bRook.png'
 import bQueen from './assets/pieces/bQueen.png'
 import bKing from './assets/pieces/bKing.png'
 
-
+// Função principal
 function App() {
 	const [board, setBoard] = useState(Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => 0)))
 
