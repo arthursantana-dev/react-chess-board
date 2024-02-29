@@ -94,7 +94,6 @@ function App() {
 
 	const updateBoardSquare = (row, column, newValue, boardArray, setBoardArray, isPreviousPiece = false) => {
 
-
 		const rightLimit = column >= 8
 		const leftLimit = column <= -1
 		const upLimit = row <= -1
@@ -106,9 +105,14 @@ function App() {
 			if((turn && isPieceWhite(row, column) == 1 ) || (!turn && isPieceWhite(row, column) == 0)) return
 		}
 
-		const theresWhitePiece = [1, 2, 3, 4, 5, 6].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
 
-		const theresBlackPiece = [7, 8, 9, 10, 11, 12].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
+		// if(!isInitialPosition){
+		// 	if(isPieceWhite(row, column) == -1 && !boardSelectedSquares[row][column]) return
+		// }
+
+		// const theresWhitePiece = [1, 2, 3, 4, 5, 6].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
+
+		// const theresBlackPiece = [7, 8, 9, 10, 11, 12].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
 
 		setBoardArray(boardArray => {
 			const newMatrix = boardArray.map((currentRow, rowIndex) =>
@@ -145,8 +149,6 @@ function App() {
 		const boardSquareValue = board[i][j]
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
 
-		// alert(`${selectedPieceCoordinates} : ${hasPieceBeenSelected} -> ${boardSquareValue}`)
-
 		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {
 			setSelectedPieceCoordinates(0)
 			clearBoardSelection()
@@ -166,7 +168,6 @@ function App() {
 
 			setTurn(!turn)
 
-			// if(selectedPieceCoordinates == [i, j]) return
 			updatePiecePosition(board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]], selectedPieceCoordinates[0], selectedPieceCoordinates[1], i, j)
 
 			const pieceValue = boardPieces.indexOf(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]])
@@ -181,8 +182,7 @@ function App() {
 
 			if (isPieceSelected) {
 
-				const pieceValue = boardPieces.indexOf(boardPieces[boardSquareValue])
-				if (([1,2,3,4,5,6].includes(pieceValue) && !turn) || ([7,8,9,10,11,12].includes(pieceValue) && turn)) return
+				if ((isPieceWhite(i,j)==1 && !turn) || (isPieceWhite(i,j)==0 && turn)) return
 
 				setSelectedPieceCoordinates([i, j])
 			}
@@ -202,7 +202,6 @@ function App() {
 
 		//rook
 		// // recursiveSelection(i, j, 'down')
-		
 
 		switch (pieceValue) {
 			case wPawn:
