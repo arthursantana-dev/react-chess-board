@@ -92,11 +92,7 @@ function App() {
 		boardStartingPosition()
 	}, [])
 
-	const updateBoardSquare = (row, column, newValue, boardArray, setBoardArray) => {
-		
-		// if(boardArray == boardSelectedSquares){
-		// 	if(boardPieces[board[row][column]] == undefined) return
-		// }
+	const updateBoardSquare = (row, column, newValue, boardArray, setBoardArray, isPreviousPiece = false) => {
 
 
 		const rightLimit = column >= 8
@@ -105,13 +101,14 @@ function App() {
 		const downLimit = row >= 8
 
 		if(rightLimit || leftLimit || upLimit || downLimit) return
-		if((turn && isPieceWhite(row, column) == 1 ) || (!turn && isPieceWhite(row, column) == 0)) return
+
+		if(!isPreviousPiece){
+			if((turn && isPieceWhite(row, column) == 1 ) || (!turn && isPieceWhite(row, column) == 0)) return
+		}
 
 		const theresWhitePiece = [1, 2, 3, 4, 5, 6].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
 
 		const theresBlackPiece = [7, 8, 9, 10, 11, 12].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
-
-		console.log(`${theresWhitePiece}, ${theresBlackPiece}, ${turn? 'white' : 'black'}`);
 
 		setBoardArray(boardArray => {
 			const newMatrix = boardArray.map((currentRow, rowIndex) =>
@@ -137,7 +134,7 @@ function App() {
 	}
 
 	const updatePiecePosition = (pieceValue, prevRow, precColumn, newRow, newColumn) => {
-		updateBoardSquare(prevRow, precColumn, 0, board, setBoard)
+		updateBoardSquare(prevRow, precColumn, 0, board, setBoard, true)
 		updateBoardSquare(newRow, newColumn, pieceValue, board, setBoard)
 	}
 
@@ -148,7 +145,6 @@ function App() {
 		const boardSquareValue = board[i][j]
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
 
-
 		// alert(`${selectedPieceCoordinates} : ${hasPieceBeenSelected} -> ${boardSquareValue}`)
 
 		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {
@@ -157,11 +153,16 @@ function App() {
 			return
 		}
 		
-
 		if(selectedPieceCoordinates != 0){
 	
-
 			if(selectedPieceCoordinates[0] == i && selectedPieceCoordinates[1] == j) return
+
+			//turno das brancas e peça branca em i,j
+			if((turn && isPieceWhite(i,j) == 1) || (!turn && isPieceWhite(i, j) == 0)){
+				setSelectedPieceCoordinates(0)
+				clearBoardSelection()
+				return
+			}
 
 			setTurn(!turn)
 
