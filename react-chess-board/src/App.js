@@ -221,18 +221,27 @@ function App() {
 		//rook
 		// // recursiveSelection(i, j, 'down')
 
-		if(pieceValue == wPawn && i == 6){
-			recursiveSelection(i, j, 'up', 4)
-		} else if(pieceValue == bPawn && i == 1){
-			recursiveSelection(i, j, 'up', 5)
-		} else {
+		if(pieceValue == wPawn){
+
+			if(i == 6) recursiveSelection(i, j, 'up', 4)
+
+			if(board[i-1][j+1] != 0 && isPieceWhite(board[i-1][j+1]) == 0) recursiveSelection(i, j, 'up', 10)
+			if(board[i-1][j-1] != 0 && isPieceWhite(board[i-1][j-1]) == 0) recursiveSelection(i, j, 'up', 11)
+		
+		} else if(pieceValue == bPawn){
+
+			if(i == 1) recursiveSelection(i, j, 'down', 5)
+
+			if(board[i+1][j+1] != 0 && isPieceWhite(board[i+1][j+1]) == 1) recursiveSelection(i, j, 'down', 20)
+			if(board[i+1][j-1] != 0 && isPieceWhite(board[i+1][j-1]) == 1) recursiveSelection(i, j, 'down', 21)
+
 			switch (pieceValue) {
 				case wPawn:
-					recursiveSelection(i, j, 'up', 1)
+					if(board[i-1][j] == 0) recursiveSelection(i, j, 'up', 1)
 					break;
 	
 				case bPawn:
-					recursiveSelection(i, j, 'down', 3)
+					if(board[i+1][j] == 0) recursiveSelection(i, j, 'down', 3)
 					break;
 	
 				case wKnight:
@@ -284,7 +293,8 @@ function App() {
 
 	}
 
-	function recursiveSelection(i, j, direction, span = 0){
+	function recursiveSelection(i, j, direction, span = 0){ //10 - wPawn captures || 20 - bPawn captures
+
 
 		switch (span){
 			case 1:
@@ -311,13 +321,13 @@ function App() {
 				break
 
 			case 4:
+				if(board[i-1][j] == 0){updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)} else break
 				if(board[i-2][j] == 0){updateBoardSquare(i-2, j, true, boardSelectedSquares, setBoardSelectedSquares)}
-				if(board[i-1][j] == 0){updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)}
 				break
 
 			case 5: 
+				if(board[i+1][j] == 0){updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)} else break
 				if(board[i+2][j] == 0){updateBoardSquare(i+2, j, true, boardSelectedSquares, setBoardSelectedSquares)}
-				if(board[i+1][j] == 0){updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)}
 				break
 			case 6:
 				updateBoardSquare(i-1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
@@ -329,12 +339,30 @@ function App() {
 				updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)
 				updateBoardSquare(i+1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
 				break
+
+			case 10:
+				updateBoardSquare(i-1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
+				break
+
+			case 11:
+				updateBoardSquare(i-1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
+				break
+
+			case 20:
+				updateBoardSquare(i+1, j+1, true, boardSelectedSquares, setBoardSelectedSquares)
+				break
+
+			case 21:
+				updateBoardSquare(i+1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
+				break
 		} 
+
 
 		const rightLimit = j >= 8
 		const leftLimit = j <= -1
 		const upLimit = i <= -1
 		const downLimit = i >= 8
+		
 
 		switch (direction) {
 			case 'right':
