@@ -35,7 +35,7 @@ function App() {
 	const isPieceWhite = (i, j) => { //1 - white; 0 - black
 		const pieceValue = board[i][j]
 
-		console.log(`-------------------- piece value: ${pieceValue}`);
+		console.log(`isPieceWhite`);
 
 		if (pieceValue == 0) return -1
 
@@ -45,7 +45,9 @@ function App() {
 	}
 
 	// Starting position
-	const boardStartingPosition = () => {
+	function boardStartingPosition(){
+		console.log("boardStartingPosition");
+
 		clearBoard()
 		setTurn(true)
 		setGameNotation([])
@@ -92,7 +94,9 @@ function App() {
 		boardStartingPosition()
 	}, [])
 
-	const updateBoardSquare = (row, column, newValue, boardArray, setBoardArray, isPreviousPiece = false) => {
+	function updateBoardSquare(row, column, newValue, boardArray, setBoardArray, isPreviousPiece = false){
+
+		console.log("updateBoardSquare");
 
 		const rightLimit = column >= 8
 		const leftLimit = column <= -1
@@ -125,11 +129,13 @@ function App() {
 		});
 	};
 
-	const clearBoardSelection = () => {
+	function clearBoardSelection(){
+		console.log("clearBoardSelection");
 		setBoardSelectedSquares(Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => false)))
 	}
 
-	const clearBoard = () => {
+	function clearBoard(){
+		console.log("clearBoard");
 		board.forEach((r, i) => {
 			r.forEach((c, j) => {
 				updateBoardSquare(i, j, 0, board, setBoard)
@@ -137,32 +143,44 @@ function App() {
 		})
 	}
 
-	const updatePiecePosition = (pieceValue, prevRow, precColumn, newRow, newColumn) => {
+	function updatePiecePosition(pieceValue, prevRow, precColumn, newRow, newColumn){
+		console.log("updatePiecePosition");
 		updateBoardSquare(prevRow, precColumn, 0, board, setBoard, true)
 		updateBoardSquare(newRow, newColumn, pieceValue, board, setBoard)
 	}
 
-	const handleSquareSelection = (i, j) => {
+	function cancelSelection(){
+		setSelectedPieceCoordinates(0)
+		clearBoardSelection()
+	}
+
+	function handleSquareSelection(i, j){
+		console.log("handleSquareSelection");
+
 		// i -> row
 		// j -> column
-
 		const boardSquareValue = board[i][j]
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
 
+		console.log(`Tem peça?  ${isPieceSelected}; É uma casa selecionada? ${boardSelectedSquares[i][j]}; Turno: ${turn}; coordenadas da peça escolhida: ${selectedPieceCoordinates}`);
+
 		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {
-			setSelectedPieceCoordinates(0)
-			clearBoardSelection()
+			cancelSelection()
 			return
 		}
+
+
 		
 		if(selectedPieceCoordinates != 0){
+			console.log("handleSquareSelection > selectedPieceCoordinates != 0");
 	
 			if(selectedPieceCoordinates[0] == i && selectedPieceCoordinates[1] == j) return
 
+
 			//turno das brancas e peça branca em i,j
-			if((turn && isPieceWhite(i,j) == 1) || (!turn && isPieceWhite(i, j) == 0)){
-				setSelectedPieceCoordinates(0)
-				clearBoardSelection()
+			if((turn && isPieceWhite(i,j) == 1) || (!turn && isPieceWhite(i, j) == 0) || !boardSelectedSquares[i][j]){
+				console.log("handleSquareSelection > selectedPieceCoordinates != 0 > turn && isPieceWhite(i,j) == 1) || (!turn && isPieceWhite(i, j) == 0");
+				cancelSelection()
 				return
 			}
 
@@ -203,60 +221,70 @@ function App() {
 		//rook
 		// // recursiveSelection(i, j, 'down')
 
-		switch (pieceValue) {
-			case wPawn:
-				recursiveSelection(i, j, 'up', 1)
-				break;
-
-			case bPawn:
-				recursiveSelection(i, j, 'down', 3)
-				break;
-
-			case wKnight:
-			case bKnight:
-				recursiveSelection(i, j, 'up', 2)
-				break
-
-			case wBishop:
-			case bBishop:
-				recursiveSelection(i, j, 'downLeft')
-				recursiveSelection(i, j, 'upRight')
-				recursiveSelection(i, j, 'downRight')
-				recursiveSelection(i, j, 'upLeft')
-				break
-
-			case wRook:
-			case bRook:
-				recursiveSelection(i, j, 'left')
-				recursiveSelection(i, j, 'right')
-				recursiveSelection(i, j, 'up')
-				recursiveSelection(i, j, 'down')
-				break
-			
-			case wQueen:
-			case bQueen:
-				recursiveSelection(i, j, 'left')
-				recursiveSelection(i, j, 'right')
-				recursiveSelection(i, j, 'up')
-				recursiveSelection(i, j, 'down')
-				recursiveSelection(i, j, 'downLeft')
-				recursiveSelection(i, j, 'upRight')
-				recursiveSelection(i, j, 'downRight')
-				recursiveSelection(i, j, 'upLeft')
-				break
-
-			case wKing:
-			case bKing:
-				recursiveSelection(i, j, 'up', 6)
-				break
-
-			default:
-				break;
+		if(pieceValue == wPawn && i == 6){
+			recursiveSelection(i, j, 'up', 4)
+		} else if(pieceValue == bPawn && i == 1){
+			recursiveSelection(i, j, 'up', 5)
+		} else {
+			switch (pieceValue) {
+				case wPawn:
+					recursiveSelection(i, j, 'up', 1)
+					break;
+	
+				case bPawn:
+					recursiveSelection(i, j, 'down', 3)
+					break;
+	
+				case wKnight:
+				case bKnight:
+					recursiveSelection(i, j, 'up', 2)
+					break
+	
+				case wBishop:
+				case bBishop:
+					recursiveSelection(i, j, 'downLeft')
+					recursiveSelection(i, j, 'upRight')
+					recursiveSelection(i, j, 'downRight')
+					recursiveSelection(i, j, 'upLeft')
+					break
+	
+				case wRook:
+				case bRook:
+					recursiveSelection(i, j, 'left')
+					recursiveSelection(i, j, 'right')
+					recursiveSelection(i, j, 'up')
+					recursiveSelection(i, j, 'down')
+					break
+				
+				case wQueen:
+				case bQueen:
+					recursiveSelection(i, j, 'left')
+					recursiveSelection(i, j, 'right')
+					recursiveSelection(i, j, 'up')
+					recursiveSelection(i, j, 'down')
+					recursiveSelection(i, j, 'downLeft')
+					recursiveSelection(i, j, 'upRight')
+					recursiveSelection(i, j, 'downRight')
+					recursiveSelection(i, j, 'upLeft')
+					break
+	
+				case wKing:
+				case bKing:
+					recursiveSelection(i, j, 'up', 6)
+					break
+	
+				default:
+					break;
+			}
 		}
+
+		
+
+		console.log("---------------------------------------------------");
 
 	}
 
-	const recursiveSelection = (i, j, direction, span = 0) => {
+	function recursiveSelection(i, j, direction, span = 0){
 
 		switch (span){
 			case 1:
@@ -282,6 +310,15 @@ function App() {
 				updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)
 				break
 
+			case 4:
+				if(board[i-2][j] == 0){updateBoardSquare(i-2, j, true, boardSelectedSquares, setBoardSelectedSquares)}
+				if(board[i-1][j] == 0){updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)}
+				break
+
+			case 5: 
+				if(board[i+2][j] == 0){updateBoardSquare(i+2, j, true, boardSelectedSquares, setBoardSelectedSquares)}
+				if(board[i+1][j] == 0){updateBoardSquare(i+1, j, true, boardSelectedSquares, setBoardSelectedSquares)}
+				break
 			case 6:
 				updateBoardSquare(i-1, j-1, true, boardSelectedSquares, setBoardSelectedSquares)
 				updateBoardSquare(i-1, j, true, boardSelectedSquares, setBoardSelectedSquares)
