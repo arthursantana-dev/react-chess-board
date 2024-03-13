@@ -546,6 +546,9 @@ function App() {
 					<button className='button' onClick={() => boardStartingPosition()}>
 						Starting position
 					</button>
+					<button className='button' onClick={() => navigator.clipboard.writeText("perdi")}>
+						Copy position to clipboard
+					</button>
 				</div>
 			</div>
 			<div className='game-notation-container'>
