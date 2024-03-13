@@ -37,7 +37,7 @@ function App() {
 		// if(!between(i, 0, 7) || !between(j, 0, 7)) return
 		if(!board[i][j]) return
 
-		// const pieceValue = board[i][j]
+		const pieceValue = board[i][j]
 
 		console.log(`isPieceWhite`);
 
@@ -252,15 +252,16 @@ function App() {
 
 			if (i == 6) recursiveSelection(i, j, 'up', 4)
 
+			// white piece capture
 			if (between(i - 1, 0, 7) && between(j + 1, 0, 7)) {
-				if (board[i - 1][j + 1] != 0 && isPieceWhite(board[i - 1][j + 1]) == 0) {
+				if (board[i - 1][j + 1] != 0 && isPieceWhite(i - 1, j + 1) == 0) {
 					recursiveSelection(i, j, 'up', 10)
 				}
 
 			}
 
 			if (between(i - 1, 0, 7) && between(j - 1, 0, 7)) {
-				if (board[i - 1][j - 1] != 0 && isPieceWhite(board[i - 1][j - 1]) == 0) {
+				if (board[i - 1][j - 1] != 0 && isPieceWhite(i - 1, j - 1) == 0) {
 					recursiveSelection(i, j, 'up', 11)
 				}
 			}
@@ -271,12 +272,13 @@ function App() {
 
 			if (i == 1) recursiveSelection(i, j, 'down', 5)
 
+			// black piece capture
 			if (between(i + 1, 0, 7) && between(j + 1, 0, 7)) {
-				if (board[i + 1][j + 1] != 0 && isPieceWhite(board[i + 1][j + 1]) == 0) recursiveSelection(i, j, 'down', 20)
+				if (board[i + 1][j + 1] != 0 && isPieceWhite(i + 1, j + 1) == 1) recursiveSelection(i, j, 'down', 20)
 			}
 
 			if (between(i + 1, 0, 7) && between(j - 1, 0, 7)) {
-				if (board[i + 1][j - 1] != 0 && isPieceWhite(board[i + 1][j - 1]) == 0) recursiveSelection(i, j, 'down', 21)
+				if (board[i + 1][j - 1] != 0 && isPieceWhite(i + 1, j - 1) == 1) recursiveSelection(i, j, 'down', 21)
 			}
 		}
 
