@@ -32,6 +32,8 @@ function App() {
 
 	const [gameNotation, setGameNotation] = useState([])
 
+	useEffect(() => console.log(gameNotation), [gameNotation])
+
 	const [pawnPreviousColumn, setPawnPreviousColumn] = useState(0) 
 
 	const isPieceWhite = (i, j) => { //1 - white; 0 - black
@@ -40,8 +42,6 @@ function App() {
 		if(!board[i][j]) return
 
 		const pieceValue = board[i][j]
-
-		console.log(`isPieceWhite`);
 
 		if (pieceValue == 0) return -1
 
@@ -52,7 +52,6 @@ function App() {
 
 	// Starting position
 	function boardStartingPosition() {
-		console.log("boardStartingPosition");
 
 		clearBoard()
 		setTurn(true)
@@ -102,7 +101,6 @@ function App() {
 
 	function updateBoardSquare(row, column, newValue, boardArray, setBoardArray, isPreviousPiece = false) {
 
-		console.log("updateBoardSquare");
 
 		const rightLimit = column >= 8
 		const leftLimit = column <= -1
@@ -127,12 +125,10 @@ function App() {
 	};
 
 	function clearBoardSelection() {
-		console.log("clearBoardSelection");
 		setBoardSelectedSquares(Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => false)))
 	}
 
 	function clearBoard() {
-		console.log("clearBoard");
 		board.forEach((r, i) => {
 			r.forEach((c, j) => {
 				updateBoardSquare(i, j, 0, board, setBoard)
@@ -141,7 +137,6 @@ function App() {
 	}
 
 	function updatePiecePosition(pieceValue, prevRow, precColumn, newRow, newColumn) {
-		console.log("updatePiecePosition");
 		updateBoardSquare(prevRow, precColumn, 0, board, setBoard, true)
 		updateBoardSquare(newRow, newColumn, pieceValue, board, setBoard)
 	}
@@ -156,7 +151,6 @@ function App() {
 	}
 
 	function noteMove(i, j, pieceValue, isCapture = false, isPawnCapture = false) {
-		console.log("note move");
 		if (!isCapture) {
 			setGameNotation([...gameNotation, `${boardPiecesNotation[pieceValue]}${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
 			return
@@ -167,20 +161,16 @@ function App() {
 			return
 		}
 
-		
-		console.log("captura de peão");	
+		console.log("pawnPreviousColumn "+pawnPreviousColumn);
 		setGameNotation([...gameNotation, `${String.fromCharCode(65 + pawnPreviousColumn).toLowerCase()}x${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
 	}
 
 	function handleSquareSelection(i, j) {
-		console.log("handleSquareSelection");
 
 		// i -> row
 		// j -> column
 		const boardSquareValue = board[i][j]
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
-
-		console.log(`Tem peça?  ${isPieceSelected}; É uma casa selecionada? ${boardSelectedSquares[i][j]}; Turno: ${turn}; coordenadas da peça escolhida: ${selectedPieceCoordinates}`);
 
 		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {
 			cancelSelection()
@@ -189,14 +179,12 @@ function App() {
 
 
 		if (selectedPieceCoordinates != 0) {
-			console.log("handleSquareSelection > selectedPieceCoordinates != 0");
 
 			if (selectedPieceCoordinates[0] == i && selectedPieceCoordinates[1] == j) return
 
 
 			//turno das brancas e peça branca em i,j
 			if ((turn && isPieceWhite(i, j) == 1) || (!turn && isPieceWhite(i, j) == 0) || !boardSelectedSquares[i][j]) {
-				console.log("handleSquareSelection > selectedPieceCoordinates != 0 > turn && isPieceWhite(i,j) == 1) || (!turn && isPieceWhite(i, j) == 0");
 				cancelSelection()
 				return
 			}
@@ -207,18 +195,19 @@ function App() {
 
 			const pieceValue = boardPieces.indexOf(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]])
 
-
-			if(![0,7].includes(pieceValue)){
+			console.log("pieceValue " + (pieceValue));
+			if(pieceValue != 1 && pieceValue != 7){
+				console.log("pieceValue " + (pieceValue));
 				if(board[i][j] == 0){
 					noteMove(i, j, pieceValue)
 				} else {
-					noteMove(i, j, pieceValue, true, true)
+					noteMove(i, j, pieceValue, true)
 				}
 			} else {
 				if(board[i][j] == 0){
 					noteMove(i, j, pieceValue)
 				} else {
-					noteMove(i, j, pieceValue, true)
+					noteMove(i, j, pieceValue, true, true)
 				}
 			}
 
