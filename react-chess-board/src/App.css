@@ -39,6 +39,11 @@
 	font-family: 'Montserrat', sans-serif;
 }
 
+.button:hover {
+	background-color: rgb(21, 10, 117);
+	transition: 0.6s;
+}
+
 .board-square:nth-child(63n-62),
 .board-square:nth-child(63n-60),
 .board-square:nth-child(63n-58),
@@ -100,6 +105,11 @@ img.img-piece {
 .board-row {
 	display: flex;
 	justify-content: space-around;
+}
+
+.w-border {
+	border: 2px solid gray;
+	border-radius: 1rem;
 }
 
 .board-container {

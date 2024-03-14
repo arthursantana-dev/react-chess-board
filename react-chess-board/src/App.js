@@ -50,6 +50,24 @@ function App() {
 		return 0
 	}
 
+	function copyGameToClipboard() {
+		let gamePGN = ''
+
+		gameNotation.map((e, i) => {
+			if(i == 0) {
+				gamePGN += `1. ${e} `
+				return
+			}
+			if((i+1) % 2 == 0){
+				gamePGN += `${e} \n`
+				return
+			}
+			gamePGN += `${i/2+1}. ${e} `
+		}) 
+
+		navigator.clipboard.writeText(gamePGN)
+	}
+
 	// Starting position
 	function boardStartingPosition() {
 
@@ -553,12 +571,12 @@ function App() {
 					<button className='button' onClick={() => boardStartingPosition()}>
 						Starting position
 					</button>
-					<button className='button' onClick={() => navigator.clipboard.writeText("perdi")}>
+					<button className='button' onClick={() => copyGameToClipboard()}>
 						Copy position to clipboard
 					</button>
 				</div>
 			</div>
-			<div className='game-notation-container'>
+			<div className={`game-notation-container ${gameNotation.length > 0? 'w-border' : ''}`}>
 				{
 					gameNotation.map((r, i) => <>
 						{
