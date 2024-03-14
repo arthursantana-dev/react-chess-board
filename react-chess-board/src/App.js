@@ -32,6 +32,8 @@ function App() {
 
 	const [gameNotation, setGameNotation] = useState([])
 
+	const [pawnPreviousColumn, setPawnPreviousColumn] = useState(0) 
+
 	const isPieceWhite = (i, j) => { //1 - white; 0 - black
 
 		// if(!between(i, 0, 7) || !between(j, 0, 7)) return
@@ -113,15 +115,6 @@ function App() {
 			if ((turn && isPieceWhite(row, column) == 1) || (!turn && isPieceWhite(row, column) == 0)) return
 		}
 
-
-		// if(!isInitialPosition){
-		// 	if(isPieceWhite(row, column) == -1 && !boardSelectedSquares[row][column]) return
-		// }
-
-		// const theresWhitePiece = [1, 2, 3, 4, 5, 6].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
-
-		// const theresBlackPiece = [7, 8, 9, 10, 11, 12].includes(boardPieces.indexOf(boardPieces[board[row][column]]))
-
 		setBoardArray(boardArray => {
 			const newMatrix = boardArray.map((currentRow, rowIndex) =>
 				rowIndex === row
@@ -162,9 +155,9 @@ function App() {
 		return x >= a && x <= b
 	}
 
-	function noteMove(i, j, pieceValue, isCapture = false, isPawnCapture = false, pawnPreviousColumn = 0) {
+	function noteMove(i, j, pieceValue, isCapture = false, isPawnCapture = false) {
+		console.log("note move");
 		if (!isCapture) {
-			console.log("IS CAPTURE");
 			setGameNotation([...gameNotation, `${boardPiecesNotation[pieceValue]}${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
 			return
 		}
@@ -174,7 +167,9 @@ function App() {
 			return
 		}
 
-		setGameNotation([...gameNotation, `${String.fromCharCode(65 + pawnPreviousColumn).toLowerCase()}${String.fromCharCode(65 + j).toLowerCase()}x${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
+		
+		console.log("captura de peão");	
+		setGameNotation([...gameNotation, `${String.fromCharCode(65 + pawnPreviousColumn).toLowerCase()}x${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
 	}
 
 	function handleSquareSelection(i, j) {
@@ -212,11 +207,22 @@ function App() {
 
 			const pieceValue = boardPieces.indexOf(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]])
 
-			if(board[i][j] == 0){
-				noteMove(i, j, pieceValue)
+
+			if(![0,7].includes(pieceValue)){
+				if(board[i][j] == 0){
+					noteMove(i, j, pieceValue)
+				} else {
+					noteMove(i, j, pieceValue, true, true)
+				}
 			} else {
-				noteMove(i, j, pieceValue, true)
+				if(board[i][j] == 0){
+					noteMove(i, j, pieceValue)
+				} else {
+					noteMove(i, j, pieceValue, true)
+				}
 			}
+
+			
 
 
 			setSelectedPieceCoordinates(0)
@@ -255,6 +261,7 @@ function App() {
 			// white piece capture
 			if (between(i - 1, 0, 7) && between(j + 1, 0, 7)) {
 				if (board[i - 1][j + 1] != 0 && isPieceWhite(i - 1, j + 1) == 0) {
+					setPawnPreviousColumn(j)
 					recursiveSelection(i, j, 'up', 10)
 				}
 
@@ -262,7 +269,9 @@ function App() {
 
 			if (between(i - 1, 0, 7) && between(j - 1, 0, 7)) {
 				if (board[i - 1][j - 1] != 0 && isPieceWhite(i - 1, j - 1) == 0) {
+					setPawnPreviousColumn(j)
 					recursiveSelection(i, j, 'up', 11)
+					
 				}
 			}
 
@@ -274,11 +283,20 @@ function App() {
 
 			// black piece capture
 			if (between(i + 1, 0, 7) && between(j + 1, 0, 7)) {
-				if (board[i + 1][j + 1] != 0 && isPieceWhite(i + 1, j + 1) == 1) recursiveSelection(i, j, 'down', 20)
+				if (board[i + 1][j + 1] != 0 && isPieceWhite(i + 1, j + 1) == 1) {
+					setPawnPreviousColumn(j)
+					recursiveSelection(i, j, 'down', 20)
+				}
+				
 			}
 
 			if (between(i + 1, 0, 7) && between(j - 1, 0, 7)) {
-				if (board[i + 1][j - 1] != 0 && isPieceWhite(i + 1, j - 1) == 1) recursiveSelection(i, j, 'down', 21)
+				if (board[i + 1][j - 1] != 0 && isPieceWhite(i + 1, j - 1) == 1) {
+					setPawnPreviousColumn(j)
+					recursiveSelection(i, j, 'down', 21)
+					
+				}
+				
 			}
 		}
 
