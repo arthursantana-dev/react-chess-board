@@ -34,12 +34,12 @@ function App() {
 
 	useEffect(() => console.log(gameNotation), [gameNotation])
 
-	const [pawnPreviousColumn, setPawnPreviousColumn] = useState(0) 
+	const [pawnPreviousColumn, setPawnPreviousColumn] = useState(0)
 
 	const isPieceWhite = (i, j) => { //1 - white; 0 - black
 
 		// if(!between(i, 0, 7) || !between(j, 0, 7)) return
-		if(!board[i][j]) return
+		if (!board[i][j]) return
 
 		const pieceValue = board[i][j]
 
@@ -54,16 +54,16 @@ function App() {
 		let gamePGN = ''
 
 		gameNotation.map((e, i) => {
-			if(i == 0) {
+			if (i == 0) {
 				gamePGN += `1. ${e} `
 				return
 			}
-			if((i+1) % 2 == 0){
+			if ((i + 1) % 2 == 0) {
 				gamePGN += `${e} \n`
 				return
 			}
-			gamePGN += `${i/2+1}. ${e} `
-		}) 
+			gamePGN += `${i / 2 + 1}. ${e} `
+		})
 
 		navigator.clipboard.writeText(gamePGN)
 	}
@@ -84,6 +84,11 @@ function App() {
 		updateBoardSquare(0, 6, 8, board, setBoard)
 		updateBoardSquare(0, 7, 10, board, setBoard)
 
+		for (let i = 2; i <= 6; i++) {
+			for (let j = 0; j <= 8; j++) {
+				updateBoardSquare(i, j, 0, board, setBoard)
+			}
+		}
 
 		updateBoardSquare(1, 0, 7, board, setBoard)
 		updateBoardSquare(1, 1, 7, board, setBoard)
@@ -179,7 +184,7 @@ function App() {
 			return
 		}
 
-		console.log("pawnPreviousColumn "+pawnPreviousColumn);
+		console.log("pawnPreviousColumn " + pawnPreviousColumn);
 		setGameNotation([...gameNotation, `${String.fromCharCode(65 + pawnPreviousColumn).toLowerCase()}x${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
 	}
 
@@ -214,22 +219,22 @@ function App() {
 			const pieceValue = boardPieces.indexOf(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]])
 
 			console.log("pieceValue " + (pieceValue));
-			if(pieceValue != 1 && pieceValue != 7){
+			if (pieceValue != 1 && pieceValue != 7) {
 				console.log("pieceValue " + (pieceValue));
-				if(board[i][j] == 0){
+				if (board[i][j] == 0) {
 					noteMove(i, j, pieceValue)
 				} else {
 					noteMove(i, j, pieceValue, true)
 				}
 			} else {
-				if(board[i][j] == 0){
+				if (board[i][j] == 0) {
 					noteMove(i, j, pieceValue)
 				} else {
 					noteMove(i, j, pieceValue, true, true)
 				}
 			}
 
-			
+
 
 
 			setSelectedPieceCoordinates(0)
@@ -278,7 +283,7 @@ function App() {
 				if (board[i - 1][j - 1] != 0 && isPieceWhite(i - 1, j - 1) == 0) {
 					setPawnPreviousColumn(j)
 					recursiveSelection(i, j, 'up', 11)
-					
+
 				}
 			}
 
@@ -294,16 +299,16 @@ function App() {
 					setPawnPreviousColumn(j)
 					recursiveSelection(i, j, 'down', 20)
 				}
-				
+
 			}
 
 			if (between(i + 1, 0, 7) && between(j - 1, 0, 7)) {
 				if (board[i + 1][j - 1] != 0 && isPieceWhite(i + 1, j - 1) == 1) {
 					setPawnPreviousColumn(j)
 					recursiveSelection(i, j, 'down', 21)
-					
+
 				}
-				
+
 			}
 		}
 
@@ -513,83 +518,83 @@ function App() {
 
 
 	return (
-		<div className="App">
-
-			<div className="board-container">
-				<div className="board-column">
-					<p>8</p>
-					<p>7</p>
-					<p>6</p>
-					<p>5</p>
-					<p>4</p>
-					<p>3</p>
-					<p>2</p>
-					<p>1</p>
-				</div>
-				<div className="col">
-					<div className='board'>
-						{
-							board.map((r, i) => {
-								return r.map((s, j) => {
-									return <div className={`board-square ${boardSelectedSquares[i][j] ? 'board-square--selected' : ''}`} onClick={() => handleSquareSelection(i, j)}
-										key={i * 8 + j}
-										column={j}
-										row={i}>
-										<img src={boardPieces[board[i][j]]} className='img-piece' />
-									</div>
+		<main>
+			<div className="App">
+				<div className="board-container">
+					<div className="board-column">
+						<p>8</p>
+						<p>7</p>
+						<p>6</p>
+						<p>5</p>
+						<p>4</p>
+						<p>3</p>
+						<p>2</p>
+						<p>1</p>
+					</div>
+					<div className="col">
+						<div className='board'>
+							{
+								board.map((r, i) => {
+									return r.map((s, j) => {
+										return <div className={`board-square ${boardSelectedSquares[i][j] ? 'board-square--selected' : ''}`} onClick={() => handleSquareSelection(i, j)}
+											key={i * 8 + j}
+											column={j}
+											row={i}>
+											<img src={boardPieces[board[i][j]]} className='img-piece' />
+										</div>
+									})
 								})
-							})
-						}
+							}
+						</div>
+						<div className='board-row'>
+							<p>
+								a
+							</p>
+							<p>
+								b
+							</p>
+							<p>
+								c
+							</p>
+							<p>
+								d
+							</p>
+							<p>
+								e
+							</p>
+							<p>
+								f
+							</p>
+							<p>
+								g
+							</p>
+							<p>
+								h
+							</p>
+						</div>
+						<button className='button' onClick={() => boardStartingPosition()}>
+							Starting position
+						</button>
+						<button className='button' onClick={() => copyGameToClipboard()}>
+							Copy position to clipboard
+						</button>
 					</div>
-
-					<div className='board-row'>
-						<p>
-							a
-						</p>
-						<p>
-							b
-						</p>
-						<p>
-							c
-						</p>
-						<p>
-							d
-						</p>
-						<p>
-							e
-						</p>
-						<p>
-							f
-						</p>
-						<p>
-							g
-						</p>
-						<p>
-							h
-						</p>
-					</div>
-					<button className='button' onClick={() => boardStartingPosition()}>
-						Starting position
-					</button>
-					<button className='button' onClick={() => copyGameToClipboard()}>
-						Copy position to clipboard
-					</button>
+				</div>
+				<div className={`game-notation-container w-border`}>
+					{
+						gameNotation.map((r, i) => <>
+							{
+								(i + 1) % 2 != 0 ? <span>{(i + 2) / 2}. </span> : ''
+							}
+							<span style={{ marginRight: 7 }} key={i}>{r}</span>
+							{
+								(i + 1) % 2 == 0 ? <br /> : ''
+							}
+						</>)
+					}
 				</div>
 			</div>
-			<div className={`game-notation-container ${gameNotation.length > 0? 'w-border' : ''}`}>
-				{
-					gameNotation.map((r, i) => <>
-						{
-							(i + 1) % 2 != 0 ? <span>{(i + 2) / 2}. </span> : ''
-						}
-						<span style={{ marginRight: 7 }} key={i}>{r}</span>
-						{
-							(i + 1) % 2 == 0 ? <br /> : ''
-						}
-					</>)
-				}
-			</div>
-		</div>
+		</main>
 	);
 }
 
