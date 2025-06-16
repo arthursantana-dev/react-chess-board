@@ -442,6 +442,7 @@ function App() {
 		// i -> row
 		// j -> column
 		const boardSquareValue = board[i][j]
+
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
 
 		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {
@@ -465,6 +466,9 @@ function App() {
 			updatePiecePosition(board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]], selectedPieceCoordinates[0], selectedPieceCoordinates[1], i, j)
 
 			const pieceValue = boardPieces.indexOf(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]])
+
+			// console.log(`============: ${board[i][j]}`);
+
 
 			console.log("pieceValue " + (pieceValue));
 			if (pieceValue != 1 && pieceValue != 7) {
@@ -592,6 +596,10 @@ function App() {
 
 				case wRook:
 				case bRook:
+
+					// console.log(`******************: ${i}, ${j}`);
+					
+
 					recursiveSelection(i, j, 'left')
 					recursiveSelection(i, j, 'right')
 					recursiveSelection(i, j, 'up')
@@ -627,8 +635,6 @@ function App() {
 	}
 
 	function recursiveSelection(i, j, direction, span = 0) { //10 - wPawn captures || 20 - bPawn captures
-
-		const currentPieceColor = isPieceWhite(i, j); // Cor do rei que está sendo movido
 
 		switch (span) {
 			case 1:
