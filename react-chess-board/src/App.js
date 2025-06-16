@@ -70,52 +70,48 @@ function App() {
 
 	// Starting position
 	function boardStartingPosition() {
+		// 1. Crie uma nova matriz vazia para o tabuleiro
+		let newBoard = Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => 0));
 
-		clearBoard()
-		setTurn(true)
-		setGameNotation([])
+		setTurn(true);
+		setGameNotation([]);
 
-		updateBoardSquare(0, 0, 10, board, setBoard)
-		updateBoardSquare(0, 1, 8, board, setBoard)
-		updateBoardSquare(0, 2, 9, board, setBoard)
-		updateBoardSquare(0, 3, 11, board, setBoard)
-		updateBoardSquare(0, 4, 12, board, setBoard)
-		updateBoardSquare(0, 5, 9, board, setBoard)
-		updateBoardSquare(0, 6, 8, board, setBoard)
-		updateBoardSquare(0, 7, 10, board, setBoard)
+		// 2. Modifique esta nova matriz diretamente
+		// Black pieces
+		newBoard[0][0] = 10; // bRook
+		newBoard[0][1] = 8;  // bKnight
+		newBoard[0][2] = 9;  // bBishop
+		newBoard[0][3] = 11; // bQueen
+		newBoard[0][4] = 12; // bKing
+		newBoard[0][5] = 9;  // bBishop
+		newBoard[0][6] = 8;  // bKnight
+		newBoard[0][7] = 10; // bRook
 
-		for (let i = 2; i <= 6; i++) {
-			for (let j = 0; j <= 8; j++) {
-				updateBoardSquare(i, j, 0, board, setBoard)
-			}
+		// Black pawns
+		for (let j = 0; j < 8; j++) {
+			newBoard[1][j] = 7; // bPawn
 		}
 
-		updateBoardSquare(1, 0, 7, board, setBoard)
-		updateBoardSquare(1, 1, 7, board, setBoard)
-		updateBoardSquare(1, 2, 7, board, setBoard)
-		updateBoardSquare(1, 3, 7, board, setBoard)
-		updateBoardSquare(1, 4, 7, board, setBoard)
-		updateBoardSquare(1, 5, 7, board, setBoard)
-		updateBoardSquare(1, 6, 7, board, setBoard)
-		updateBoardSquare(1, 7, 7, board, setBoard)
+		// White pawns
+		for (let j = 0; j < 8; j++) {
+			newBoard[6][j] = 1; // wPawn
+		}
 
-		updateBoardSquare(6, 0, 1, board, setBoard)
-		updateBoardSquare(6, 1, 1, board, setBoard)
-		updateBoardSquare(6, 2, 1, board, setBoard)
-		updateBoardSquare(6, 3, 1, board, setBoard)
-		updateBoardSquare(6, 4, 1, board, setBoard)
-		updateBoardSquare(6, 5, 1, board, setBoard)
-		updateBoardSquare(6, 6, 1, board, setBoard)
-		updateBoardSquare(6, 7, 1, board, setBoard)
+		// White pieces
+		newBoard[7][0] = 4;  // wRook
+		newBoard[7][1] = 2;  // wKnight
+		newBoard[7][2] = 3;  // wBishop
+		newBoard[7][3] = 5;  // wQueen
+		newBoard[7][4] = 6;  // wKing
+		newBoard[7][5] = 3;  // wBishop
+		newBoard[7][6] = 2;  // wKnight
+		newBoard[7][7] = 4;  // wRook
 
-		updateBoardSquare(7, 0, 4, board, setBoard)
-		updateBoardSquare(7, 1, 2, board, setBoard)
-		updateBoardSquare(7, 2, 3, board, setBoard)
-		updateBoardSquare(7, 3, 5, board, setBoard)
-		updateBoardSquare(7, 4, 6, board, setBoard)
-		updateBoardSquare(7, 5, 3, board, setBoard)
-		updateBoardSquare(7, 6, 2, board, setBoard)
-		updateBoardSquare(7, 7, 4, board, setBoard)
+		// 3. Defina o estado do board apenas uma vez
+		setBoard(newBoard);
+
+		// E certifique-se de limpar a seleção do tabuleiro também
+		clearBoardSelection();
 	}
 
 	useEffect(() => {
@@ -123,7 +119,6 @@ function App() {
 	}, [])
 
 	function updateBoardSquare(row, column, newValue, boardArray, setBoardArray, isPreviousPiece = false) {
-
 
 		const rightLimit = column >= 8
 		const leftLimit = column <= -1
