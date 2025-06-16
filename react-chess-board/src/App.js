@@ -28,14 +28,16 @@ function App() {
 	const [selectedPieceCoordinates, setSelectedPieceCoordinates] = useState(0)
 	//                                                                 x (row), y (column)
 
+	const [boardCheck, setBoardCheck] = useState([-1, -1])
+
 	const [turn, setTurn] = useState(true) //true - white; false - black
 
 	const [gameNotation, setGameNotation] = useState([])
 
 	useEffect(() => {
 		console.log(gameNotation)
-		isKingInCheck(0, board)
-		isKingInCheck(1, board)
+		// isKingInCheck(0, board)
+		// isKingInCheck(1, board)
 		console.log("-------------------");
 
 
@@ -82,6 +84,7 @@ function App() {
 
 		setTurn(true);
 		setGameNotation([]);
+		setBoardCheck([-1, -1])
 
 		// 2. Modifique esta nova matriz diretamente
 		// Black pieces
@@ -287,12 +290,15 @@ function App() {
 		return false; // A casa não está sendo atacada
 	}
 
-	function isKingInCheck(kingColor, currentBoard) {
+	function isKingInCheck(kingColorBoolean, currentBoard) {
+		// Converte o booleano kingColorBoolean para 1 (branco) ou 0 (preto)
+		const kingColor = kingColorBoolean ? 1 : 0; // 1 para branco, 0 para preto
+
 		let kingRow = -1;
 		let kingColumn = -1;
 
 		// Encontrar a posição do rei da cor especificada
-		const kingPieceValue = kingColor === 1 ? 6 : 12; // 6 para rei branco, 12 para rei preto
+		const kingPieceValue = kingColor === 1 ? 6 : 12; // 6 para rei branco (wKing), 12 para rei preto (bKing)
 		for (let i = 0; i < 8; i++) {
 			for (let j = 0; j < 8; j++) {
 				if (currentBoard[i][j] === kingPieceValue) {
@@ -311,13 +317,124 @@ function App() {
 		}
 
 		// A cor que estaria atacando o rei
-		const attackingColor = kingColor === 1 ? 0 : 1; // Se o rei é branco, as pretas atacam. Se o rei é preto, as brancas atacam.
+		const attackingColor = kingColor === 1 ? 0 : 1; // Se o rei é branco (1), as pretas (0) atacam. Se o rei é preto (0), as brancas (1) atacam.
 
-		console.log(`rei ${kingColor === 1 ? "branco" : "preto"} atacado: ${isSquareAttacked(kingRow, kingColumn, attackingColor, currentBoard)}`);
+		return isSquareAttacked(kingRow, kingColumn, attackingColor, board)
+	}
 
+	function getCheckingPieces(kingColor, currentBoard) {
+		let kingRow = -1;
+		let kingColumn = -1;
+		const checkingPieces = [];
 
-		// Verificar se a casa do rei está sendo atacada
-		return isSquareAttacked(kingRow, kingColumn, attackingColor, currentBoard);
+		// Encontrar a posição do rei
+		const kingPieceValue = kingColor === 1 ? 6 : 12; // 6 para rei branco, 12 para rei preto
+		for (let i = 0; i < 8; i++) {
+			for (let j = 0; j < 8; j++) {
+				if (currentBoard[i][j] === kingPieceValue) {
+					kingRow = i;
+					kingColumn = j;
+					break;
+				}
+			}
+			if (kingRow !== -1) break;
+		}
+
+		if (kingRow === -1) {
+			// Rei não encontrado, o que é um estado de erro para o cheque
+			return [];
+		}
+
+		const attackingColor = kingColor === 1 ? 0 : 1; // Cor do oponente
+
+		// Lógica para encontrar peças que atacam o rei:
+
+		// 1. Verificar Peões
+		if (attackingColor === 1) { // Peões brancos atacando
+			if (between(kingRow + 1, 0, 7)) {
+				if (between(kingColumn - 1, 0, 7) && currentBoard[kingRow + 1][kingColumn - 1] === 1) checkingPieces.push([kingRow + 1, kingColumn - 1]);
+				if (between(kingColumn + 1, 0, 7) && currentBoard[kingRow + 1][kingColumn + 1] === 1) checkingPieces.push([kingRow + 1, kingColumn + 1]);
+			}
+		} else { // Peões pretos atacando
+			if (between(kingRow - 1, 0, 7)) {
+				if (between(kingColumn - 1, 0, 7) && currentBoard[kingRow - 1][kingColumn - 1] === 7) checkingPieces.push([kingRow - 1, kingColumn - 1]);
+				if (between(kingColumn + 1, 0, 7) && currentBoard[kingRow - 1][kingColumn + 1] === 7) checkingPieces.push([kingRow - 1, kingColumn + 1]);
+			}
+		}
+
+		// 2. Verificar Cavalos
+		const knightMoves = [
+			[-2, 1], [-2, -1], [-1, 2], [-1, -2],
+			[2, 1], [2, -1], [1, 2], [1, -2]
+		];
+		for (const [dr, dc] of knightMoves) {
+			const r = kingRow + dr;
+			const c = kingColumn + dc;
+			if (between(r, 0, 7) && between(c, 0, 7)) {
+				const piece = currentBoard[r][c];
+				if ((attackingColor === 1 && piece === 2) || (attackingColor === 0 && piece === 8)) {
+					checkingPieces.push([r, c]);
+				}
+			}
+		}
+
+		// 3. Verificar Bispos e Rainhas (diagonais)
+		const diagonalDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+		for (const [dr, dc] of diagonalDirections) {
+			let r = kingRow + dr;
+			let c = kingColumn + dc;
+			while (between(r, 0, 7) && between(c, 0, 7)) {
+				const piece = currentBoard[r][c];
+				if (piece !== 0) {
+					if ((attackingColor === 1 && (piece === 3 || piece === 5)) ||
+						(attackingColor === 0 && (piece === 9 || piece === 11))) {
+						checkingPieces.push([r, c]);
+					}
+					break;
+				}
+				r += dr;
+				c += dc;
+			}
+		}
+
+		// 4. Verificar Torres e Rainhas (linhas e colunas)
+		const straightDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+		for (const [dr, dc] of straightDirections) {
+			let r = kingRow + dr;
+			let c = kingColumn + dc;
+			while (between(r, 0, 7) && between(c, 0, 7)) {
+				const piece = currentBoard[r][c];
+				if (piece !== 0) {
+					if ((attackingColor === 1 && (piece === 4 || piece === 5)) ||
+						(attackingColor === 0 && (piece === 10 || piece === 11))) {
+						checkingPieces.push([r, c]);
+					}
+					break;
+				}
+				r += dr;
+				c += dc;
+			}
+		}
+
+		// 5. Verificar Reis (para cheque "adjacente") - apenas para detectar se o rei oposto
+		// se moveu para uma casa ilegal (adjacente ao nosso rei)
+		const kingMoves = [
+			[-1, -1], [-1, 0], [-1, 1],
+			[0, -1], [0, 1],
+			[1, -1], [1, 0], [1, 1]
+		];
+		for (const [dr, dc] of kingMoves) {
+			const r = kingRow + dr;
+			const c = kingColumn + dc;
+			if (between(r, 0, 7) && between(c, 0, 7)) {
+				const piece = currentBoard[r][c];
+				if ((attackingColor === 1 && piece === 6) || (attackingColor === 0 && piece === 12)) {
+					checkingPieces.push([r, c]);
+				}
+			}
+		}
+
+		return checkingPieces;
 	}
 
 	function handleSquareSelection(i, j) {
@@ -331,7 +448,6 @@ function App() {
 			cancelSelection()
 			return
 		}
-
 
 		if (selectedPieceCoordinates != 0) {
 
@@ -398,103 +514,113 @@ function App() {
 		//rook
 		// // recursiveSelection(i, j, 'down')
 
-		if (pieceValue == wPawn) {
+		console.log(`lance : ${turn ? "brancas" : "pretas"}`);
 
-			if (i == 6) recursiveSelection(i, j, 'up', 4)
 
-			// white piece capture
-			if (between(i - 1, 0, 7) && between(j + 1, 0, 7)) {
-				if (board[i - 1][j + 1] != 0 && isPieceWhite(i - 1, j + 1) == 0) {
-					setPawnPreviousColumn(j)
-					recursiveSelection(i, j, 'up', 10)
+		if (1 == 0) {
+			console.log(`rei em xeque! : ${turn}`);
+
+		} else {
+			if (pieceValue == wPawn) {
+
+				if (i == 6) recursiveSelection(i, j, 'up', 4)
+
+				// white piece capture
+				if (between(i - 1, 0, 7) && between(j + 1, 0, 7)) {
+					if (board[i - 1][j + 1] != 0 && isPieceWhite(i - 1, j + 1) == 0) {
+						setPawnPreviousColumn(j)
+						recursiveSelection(i, j, 'up', 10)
+					}
+
 				}
 
+				if (between(i - 1, 0, 7) && between(j - 1, 0, 7)) {
+					if (board[i - 1][j - 1] != 0 && isPieceWhite(i - 1, j - 1) == 0) {
+						setPawnPreviousColumn(j)
+						recursiveSelection(i, j, 'up', 11)
+
+					}
+				}
+
+
+
+			} else if (pieceValue == bPawn) {
+
+				if (i == 1) recursiveSelection(i, j, 'down', 5)
+
+				// black piece capture
+				if (between(i + 1, 0, 7) && between(j + 1, 0, 7)) {
+					if (board[i + 1][j + 1] != 0 && isPieceWhite(i + 1, j + 1) == 1) {
+						setPawnPreviousColumn(j)
+						recursiveSelection(i, j, 'down', 20)
+					}
+
+				}
+
+				if (between(i + 1, 0, 7) && between(j - 1, 0, 7)) {
+					if (board[i + 1][j - 1] != 0 && isPieceWhite(i + 1, j - 1) == 1) {
+						setPawnPreviousColumn(j)
+						recursiveSelection(i, j, 'down', 21)
+
+					}
+
+				}
 			}
 
-			if (between(i - 1, 0, 7) && between(j - 1, 0, 7)) {
-				if (board[i - 1][j - 1] != 0 && isPieceWhite(i - 1, j - 1) == 0) {
-					setPawnPreviousColumn(j)
-					recursiveSelection(i, j, 'up', 11)
 
-				}
-			}
+			switch (pieceValue) {
+				case wPawn:
+					if (board[i - 1][j] == 0) recursiveSelection(i, j, 'up', 1)
+					break;
 
+				case bPawn:
+					if (board[i + 1][j] == 0) recursiveSelection(i, j, 'down', 3)
+					break;
 
+				case wKnight:
+				case bKnight:
+					recursiveSelection(i, j, 'up', 2)
+					break
 
-		} else if (pieceValue == bPawn) {
+				case wBishop:
+				case bBishop:
+					recursiveSelection(i, j, 'downLeft')
+					recursiveSelection(i, j, 'upRight')
+					recursiveSelection(i, j, 'downRight')
+					recursiveSelection(i, j, 'upLeft')
+					break
 
-			if (i == 1) recursiveSelection(i, j, 'down', 5)
+				case wRook:
+				case bRook:
+					recursiveSelection(i, j, 'left')
+					recursiveSelection(i, j, 'right')
+					recursiveSelection(i, j, 'up')
+					recursiveSelection(i, j, 'down')
+					break
 
-			// black piece capture
-			if (between(i + 1, 0, 7) && between(j + 1, 0, 7)) {
-				if (board[i + 1][j + 1] != 0 && isPieceWhite(i + 1, j + 1) == 1) {
-					setPawnPreviousColumn(j)
-					recursiveSelection(i, j, 'down', 20)
-				}
+				case wQueen:
+				case bQueen:
+					recursiveSelection(i, j, 'left')
+					recursiveSelection(i, j, 'right')
+					recursiveSelection(i, j, 'up')
+					recursiveSelection(i, j, 'down')
+					recursiveSelection(i, j, 'downLeft')
+					recursiveSelection(i, j, 'upRight')
+					recursiveSelection(i, j, 'downRight')
+					recursiveSelection(i, j, 'upLeft')
+					break
 
-			}
+				case wKing:
+				case bKing:
+					recursiveSelection(i, j, 'up', 6)
+					break
 
-			if (between(i + 1, 0, 7) && between(j - 1, 0, 7)) {
-				if (board[i + 1][j - 1] != 0 && isPieceWhite(i + 1, j - 1) == 1) {
-					setPawnPreviousColumn(j)
-					recursiveSelection(i, j, 'down', 21)
-
-				}
-
+				default:
+					break;
 			}
 		}
 
 
-		switch (pieceValue) {
-			case wPawn:
-				if (board[i - 1][j] == 0) recursiveSelection(i, j, 'up', 1)
-				break;
-
-			case bPawn:
-				if (board[i + 1][j] == 0) recursiveSelection(i, j, 'down', 3)
-				break;
-
-			case wKnight:
-			case bKnight:
-				recursiveSelection(i, j, 'up', 2)
-				break
-
-			case wBishop:
-			case bBishop:
-				recursiveSelection(i, j, 'downLeft')
-				recursiveSelection(i, j, 'upRight')
-				recursiveSelection(i, j, 'downRight')
-				recursiveSelection(i, j, 'upLeft')
-				break
-
-			case wRook:
-			case bRook:
-				recursiveSelection(i, j, 'left')
-				recursiveSelection(i, j, 'right')
-				recursiveSelection(i, j, 'up')
-				recursiveSelection(i, j, 'down')
-				break
-
-			case wQueen:
-			case bQueen:
-				recursiveSelection(i, j, 'left')
-				recursiveSelection(i, j, 'right')
-				recursiveSelection(i, j, 'up')
-				recursiveSelection(i, j, 'down')
-				recursiveSelection(i, j, 'downLeft')
-				recursiveSelection(i, j, 'upRight')
-				recursiveSelection(i, j, 'downRight')
-				recursiveSelection(i, j, 'upLeft')
-				break
-
-			case wKing:
-			case bKing:
-				recursiveSelection(i, j, 'up', 6)
-				break
-
-			default:
-				break;
-		}
 
 		console.log("---------------------------------------------------");
 
@@ -502,6 +628,7 @@ function App() {
 
 	function recursiveSelection(i, j, direction, span = 0) { //10 - wPawn captures || 20 - bPawn captures
 
+		const currentPieceColor = isPieceWhite(i, j); // Cor do rei que está sendo movido
 
 		switch (span) {
 			case 1:
@@ -683,7 +810,7 @@ function App() {
 							{
 								board.map((r, i) => {
 									return r.map((s, j) => {
-										return <div className={`board-square ${boardSelectedSquares[i][j] ? 'board-square--selected' : ''}`} onClick={() => handleSquareSelection(i, j)}
+										return <div className={`board-square ${boardSelectedSquares[i][j] ? 'board-square--selected' : ''} ${(i == boardCheck[0] && j == boardCheck[1]) ? "board-square--check" : ""}`} onClick={() => handleSquareSelection(i, j)}
 											key={i * 8 + j}
 											column={j}
 											row={i}>
@@ -723,7 +850,7 @@ function App() {
 							Starting position
 						</button>
 						<button className='button' onClick={() => copyGameToClipboard()}>
-							Copy position to clipboard
+							Copy moves to clipboard
 						</button>
 					</div>
 				</div>

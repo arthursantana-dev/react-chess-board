@@ -38,6 +38,10 @@ main{
 	align-items: center;
 }
 
+.board-square--check{
+	background-color: red !important;
+}
+
 .button {
 	padding: 10px;
 	border-radius: 0.25rem;
