@@ -32,7 +32,14 @@ function App() {
 
 	const [gameNotation, setGameNotation] = useState([])
 
-	useEffect(() => console.log(gameNotation), [gameNotation])
+	useEffect(() => {
+		console.log(gameNotation)
+		isKingInCheck(0, board)
+		isKingInCheck(1, board)
+		console.log("-------------------");
+
+
+	}, [gameNotation])
 
 	const [pawnPreviousColumn, setPawnPreviousColumn] = useState(0)
 
@@ -181,6 +188,136 @@ function App() {
 
 		console.log("pawnPreviousColumn " + pawnPreviousColumn);
 		setGameNotation([...gameNotation, `${String.fromCharCode(65 + pawnPreviousColumn).toLowerCase()}x${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
+	}
+
+	function isSquareAttacked(targetRow, targetColumn, attackingColor, currentBoard) {
+		// attackingColor: 1 para branco atacando, 0 para preto atacando
+
+		// A cor do rei que estamos verificando o cheque
+		const kingColor = attackingColor === 1 ? 0 : 1; // Se as brancas estão atacando, o rei é preto e vice-versa
+
+		// 1. Verificar Peões
+		if (attackingColor === 1) { // Peões brancos atacando
+			if (between(targetRow + 1, 0, 7) && (
+				(between(targetColumn - 1, 0, 7) && currentBoard[targetRow + 1][targetColumn - 1] === 1) ||
+				(between(targetColumn + 1, 0, 7) && currentBoard[targetRow + 1][targetColumn + 1] === 1)
+			)) {
+				return true;
+			}
+		} else { // Peões pretos atacando
+			if (between(targetRow - 1, 0, 7) && (
+				(between(targetColumn - 1, 0, 7) && currentBoard[targetRow - 1][targetColumn - 1] === 7) ||
+				(between(targetColumn + 1, 0, 7) && currentBoard[targetRow - 1][targetColumn + 1] === 7)
+			)) {
+				return true;
+			}
+		}
+
+		// 2. Verificar Cavalos (mesmos movimentos para ambos os lados)
+		const knightMoves = [
+			[-2, 1], [-2, -1], [-1, 2], [-1, -2],
+			[2, 1], [2, -1], [1, 2], [1, -2]
+		];
+		for (const [dr, dc] of knightMoves) {
+			const r = targetRow + dr;
+			const c = targetColumn + dc;
+			if (between(r, 0, 7) && between(c, 0, 7)) {
+				const piece = currentBoard[r][c];
+				if ((attackingColor === 1 && piece === 2) || (attackingColor === 0 && piece === 8)) {
+					return true;
+				}
+			}
+		}
+
+		// 3. Verificar Bispos e Rainhas (diagonais)
+		const diagonalDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+		for (const [dr, dc] of diagonalDirections) {
+			let r = targetRow + dr;
+			let c = targetColumn + dc;
+			while (between(r, 0, 7) && between(c, 0, 7)) {
+				const piece = currentBoard[r][c];
+				if (piece !== 0) {
+					if ((attackingColor === 1 && (piece === 3 || piece === 5)) ||
+						(attackingColor === 0 && (piece === 9 || piece === 11))) {
+						return true;
+					}
+					break; // Parar se encontrar uma peça (sua ou do oponente)
+				}
+				r += dr;
+				c += dc;
+			}
+		}
+
+		// 4. Verificar Torres e Rainhas (linhas e colunas)
+		const straightDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+		for (const [dr, dc] of straightDirections) {
+			let r = targetRow + dr;
+			let c = targetColumn + dc;
+			while (between(r, 0, 7) && between(c, 0, 7)) {
+				const piece = currentBoard[r][c];
+				if (piece !== 0) {
+					if ((attackingColor === 1 && (piece === 4 || piece === 5)) ||
+						(attackingColor === 0 && (piece === 10 || piece === 11))) {
+						return true;
+					}
+					break; // Parar se encontrar uma peça (sua ou do oponente)
+				}
+				r += dr;
+				c += dc;
+			}
+		}
+
+		// 5. Verificar Reis (para cheque "adjacente" - importante para evitar movimentos ilegais)
+		const kingMoves = [
+			[-1, -1], [-1, 0], [-1, 1],
+			[0, -1], [0, 1],
+			[1, -1], [1, 0], [1, 1]
+		];
+		for (const [dr, dc] of kingMoves) {
+			const r = targetRow + dr;
+			const c = targetColumn + dc;
+			if (between(r, 0, 7) && between(c, 0, 7)) {
+				const piece = currentBoard[r][c];
+				if ((attackingColor === 1 && piece === 6) || (attackingColor === 0 && piece === 12)) {
+					return true;
+				}
+			}
+		}
+
+		return false; // A casa não está sendo atacada
+	}
+
+	function isKingInCheck(kingColor, currentBoard) {
+		let kingRow = -1;
+		let kingColumn = -1;
+
+		// Encontrar a posição do rei da cor especificada
+		const kingPieceValue = kingColor === 1 ? 6 : 12; // 6 para rei branco, 12 para rei preto
+		for (let i = 0; i < 8; i++) {
+			for (let j = 0; j < 8; j++) {
+				if (currentBoard[i][j] === kingPieceValue) {
+					kingRow = i;
+					kingColumn = j;
+					break;
+				}
+			}
+			if (kingRow !== -1) break;
+		}
+
+		// Se o rei não for encontrado (situação incomum, mas por segurança)
+		if (kingRow === -1) {
+			console.warn(`Rei da cor ${kingColor === 1 ? 'branca' : 'preta'} não encontrado no tabuleiro.`);
+			return false;
+		}
+
+		// A cor que estaria atacando o rei
+		const attackingColor = kingColor === 1 ? 0 : 1; // Se o rei é branco, as pretas atacam. Se o rei é preto, as brancas atacam.
+
+		console.log(`rei ${kingColor === 1 ? "branco" : "preto"} atacado: ${isSquareAttacked(kingRow, kingColumn, attackingColor, currentBoard)}`);
+
+
+		// Verificar se a casa do rei está sendo atacada
+		return isSquareAttacked(kingRow, kingColumn, attackingColor, currentBoard);
 	}
 
 	function handleSquareSelection(i, j) {
@@ -401,15 +538,30 @@ function App() {
 				break
 
 			case 6:
-				updateBoardSquare(i - 1, j - 1, true, boardSelectedSquares, setBoardSelectedSquares)
-				updateBoardSquare(i - 1, j, true, boardSelectedSquares, setBoardSelectedSquares)
-				updateBoardSquare(i - 1, j + 1, true, boardSelectedSquares, setBoardSelectedSquares)
-				updateBoardSquare(i, j - 1, true, boardSelectedSquares, setBoardSelectedSquares)
-				updateBoardSquare(i, j + 1, true, boardSelectedSquares, setBoardSelectedSquares)
-				updateBoardSquare(i + 1, j - 1, true, boardSelectedSquares, setBoardSelectedSquares)
-				updateBoardSquare(i + 1, j, true, boardSelectedSquares, setBoardSelectedSquares)
-				updateBoardSquare(i + 1, j + 1, true, boardSelectedSquares, setBoardSelectedSquares)
-				break
+				const kingMoves = [
+					[-1, -1], [-1, 0], [-1, 1],
+					[0, -1], [0, 1],
+					[1, -1], [1, 0], [1, 1]
+				];
+
+				const currentPieceColor = isPieceWhite(i, j); // Cor do rei que está sendo movido
+				const attackingColor = currentPieceColor === 1 ? 0 : 1; // Cor do oponente
+
+				for (const [dr, dc] of kingMoves) {
+					const newRow = i + dr;
+					const newColumn = j + dc;
+
+					// Verifica se a nova casa está dentro dos limites do tabuleiro
+					if (between(newRow, 0, 7) && between(newColumn, 0, 7)) {
+						// Verifica se a casa está vazia ou contém uma peça do oponente
+						// E, crucialmente, verifica se a casa NÃO está sendo atacada pelo oponente
+						if ((board[newRow][newColumn] === 0 || isPieceWhite(newRow, newColumn) !== currentPieceColor) &&
+							!isSquareAttacked(newRow, newColumn, attackingColor, board)) {
+							updateBoardSquare(newRow, newColumn, true, boardSelectedSquares, setBoardSelectedSquares);
+						}
+					}
+				}
+				break;
 
 			case 10:
 				updateBoardSquare(i - 1, j + 1, true, boardSelectedSquares, setBoardSelectedSquares)
