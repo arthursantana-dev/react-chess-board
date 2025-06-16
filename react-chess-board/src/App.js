@@ -32,6 +32,10 @@ function App() {
 
 	const [turn, setTurn] = useState(true) //true - white; false - black
 
+	const [move, setMove] = useState([[], []])
+
+	const [game, setGame] = useState([])
+
 	const [gameNotation, setGameNotation] = useState([])
 
 	useEffect(() => {
@@ -141,6 +145,7 @@ function App() {
 			if ((turn && isPieceWhite(row, column) == 1) || (!turn && isPieceWhite(row, column) == 0)) return
 		}
 
+
 		setBoardArray(boardArray => {
 			const newMatrix = boardArray.map((currentRow, rowIndex) =>
 				rowIndex === row
@@ -165,6 +170,7 @@ function App() {
 	}
 
 	function updatePiecePosition(pieceValue, prevRow, precColumn, newRow, newColumn) {
+
 		updateBoardSquare(prevRow, precColumn, 0, board, setBoard, true)
 		updateBoardSquare(newRow, newColumn, pieceValue, board, setBoard)
 	}
@@ -179,6 +185,12 @@ function App() {
 	}
 
 	function noteMove(i, j, pieceValue, isCapture = false, isPawnCapture = false) {
+
+		const moveStartCoodinates = move[0]
+
+		setMove([moveStartCoodinates, [i,j]])
+
+
 		if (!isCapture) {
 			setGameNotation([...gameNotation, `${boardPiecesNotation[pieceValue]}${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
 			return
@@ -445,12 +457,25 @@ function App() {
 
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
 
-		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {
+		if(isPieceSelected){
+			setMove([[i, j], [-1, -1]])
+		}
+
+		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {			
 			cancelSelection()
 			return
 		}
 
+		// peça selecionada
 		if (selectedPieceCoordinates != 0) {
+
+			const moveStartCoodinates = move[0]
+
+			console.log(`msc: ${moveStartCoodinates}`);
+			
+
+			// setMove([moveStartCoodinates, [i,j]])
+
 
 			if (selectedPieceCoordinates[0] == i && selectedPieceCoordinates[1] == j) return
 
@@ -598,7 +623,6 @@ function App() {
 				case bRook:
 
 					// console.log(`******************: ${i}, ${j}`);
-					
 
 					recursiveSelection(i, j, 'left')
 					recursiveSelection(i, j, 'right')
@@ -796,6 +820,21 @@ function App() {
 
 	}
 
+	useEffect(() => {
+		console.log(`início: ${move[0][0]}, ${move[0][1]}`);
+		console.log(`fim: ${move[1][0]}, ${move[1][1]}`);
+
+		if(move[1].toString() != [-1, -1].toString()){
+			// console.log(`lance registravel`);
+			const oldGame = game;
+
+			oldGame.push(move)
+
+			setGame(oldGame)
+		}
+		
+	}, [move])
+
 
 	return (
 		<main>
@@ -852,12 +891,24 @@ function App() {
 								h
 							</p>
 						</div>
-						<button className='button' onClick={() => boardStartingPosition()}>
-							Starting position
-						</button>
-						<button className='button' onClick={() => copyGameToClipboard()}>
-							Copy moves to clipboard
-						</button>
+						<div class="button-wrapper--row">
+							<button className='button' onClick={() => boardStartingPosition()}>
+								Starting position
+							</button>
+							<button className='button' onClick={() => copyGameToClipboard()}>
+								Copy moves to clipboard
+							</button>
+						</div>
+						<hr/>
+						<section className='button-wrapper'>
+								<button className='button button-white'>
+									White: resign
+								</button>
+								<button className='button'>
+									Black: resign
+								</button>
+							</section>
+
 					</div>
 				</div>
 				<div className={`game-notation-container w-border`}>

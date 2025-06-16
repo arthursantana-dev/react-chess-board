@@ -42,14 +42,36 @@ main{
 	background-color: red !important;
 }
 
+.button-wrapper--row{
+	padding: 0.2rem;
+	width: fit-content;
+	display: flex;
+	flex-direction: row;
+}
+
+.button-wrapper{
+	padding: 0.2rem;
+	/* border: solid 1px gray; */
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+}
+
 .button {
 	padding: 10px;
 	border-radius: 0.25rem;
 	border: 1px solid gray;
+	min-width: 10rem;
 	background-color: rgb(6, 2, 39);
 	margin-inline: 0.5rem;
+	height: fit-content;
 	color: white;
 	font-family: 'Montserrat', sans-serif;
+}
+
+.button-white{
+	background-color: white;
+	color: black;
 }
 
 .button:hover {
