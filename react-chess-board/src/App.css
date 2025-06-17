@@ -12,7 +12,7 @@ main{
 .App {
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: start;
 	flex-direction: row;
 	margin: auto;
 	height: fit-content;
@@ -44,7 +44,8 @@ main{
 
 .button-wrapper--row{
 	padding: 0.2rem;
-	width: fit-content;
+	justify-content: space-between;
+	width: 27rem;
 	display: flex;
 	flex-direction: row;
 }
@@ -53,15 +54,25 @@ main{
 	padding: 0.2rem;
 	/* border: solid 1px gray; */
 	display: flex;
+	gap: 0.2rem;
 	flex-wrap: wrap;
 	flex-direction: column;
+}
+
+hr {
+	margin-inline: 2rem;
+}
+
+.button-gray{
+	background-color: rgb(170, 170, 170) !important;
+	color: black !important;
 }
 
 .button {
 	padding: 10px;
 	border-radius: 0.25rem;
 	border: 1px solid gray;
-	min-width: 10rem;
+	min-width: 5rem;
 	background-color: rgb(6, 2, 39);
 	margin-inline: 0.5rem;
 	height: fit-content;
@@ -153,10 +164,18 @@ img.img-piece {
 	display: flex;
 }
 
+.move-order{
+	padding: 1rem;
+	margin-inline: 1rem;
+	display: flex;
+	justify-content: space-between;
+}
+
 .game-notation-container {
 	padding: 2rem;
 	margin-inline: 2rem;
-	height: calc(100% - 9rem);
+	height: 23rem;
+	overflow-y: scroll;
 	width: 10rem;
 	align-self: start;
 }

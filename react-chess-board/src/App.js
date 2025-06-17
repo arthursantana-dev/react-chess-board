@@ -63,6 +63,8 @@ function App() {
 		return 0
 	}
 
+	let gameMoveIndex = 0
+
 	function copyGameToClipboard() {
 		let gamePGN = ''
 
@@ -88,6 +90,7 @@ function App() {
 
 		setTurn(true);
 		setGameNotation([]);
+		setGame([])
 		setBoardCheck([-1, -1])
 
 		// 2. Modifique esta nova matriz diretamente
@@ -126,6 +129,20 @@ function App() {
 
 		// E certifique-se de limpar a seleção do tabuleiro também
 		clearBoardSelection();
+	}
+
+	function goForwardGameMove(){
+
+	}
+
+	function goBackGameMove(){
+		console.log(`gmi: ${gameMoveIndex}`);
+		updatePiecePosition(board[game[gameMoveIndex][1][0]][game[gameMoveIndex][1][1]], game[gameMoveIndex][1][0], game[gameMoveIndex][1][1], game[gameMoveIndex][0][0], game[gameMoveIndex][0][1])
+		setTurn(!turn)
+		
+		if(gameMoveIndex > 0){
+			gameMoveIndex--
+		}
 	}
 
 	useEffect(() => {
@@ -185,11 +202,9 @@ function App() {
 	}
 
 	function noteMove(i, j, pieceValue, isCapture = false, isPawnCapture = false) {
-
 		const moveStartCoodinates = move[0]
 
-		setMove([moveStartCoodinates, [i,j]])
-
+		setMove([moveStartCoodinates, [i, j]])
 
 		if (!isCapture) {
 			setGameNotation([...gameNotation, `${boardPiecesNotation[pieceValue]}${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
@@ -457,11 +472,11 @@ function App() {
 
 		const isPieceSelected = boardPieces.indexOf(boardPieces[boardSquareValue]) > 0
 
-		if(isPieceSelected){
+		if (isPieceSelected) {
 			setMove([[i, j], [-1, -1]])
 		}
 
-		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {			
+		if (boardSelectedSquares[i][j] == false && isPieceSelected == false) {
 			cancelSelection()
 			return
 		}
@@ -472,7 +487,7 @@ function App() {
 			const moveStartCoodinates = move[0]
 
 			console.log(`msc: ${moveStartCoodinates}`);
-			
+
 
 			// setMove([moveStartCoodinates, [i,j]])
 
@@ -824,16 +839,25 @@ function App() {
 		console.log(`início: ${move[0][0]}, ${move[0][1]}`);
 		console.log(`fim: ${move[1][0]}, ${move[1][1]}`);
 
-		if(move[1].toString() != [-1, -1].toString()){
-			// console.log(`lance registravel`);
-			const oldGame = game;
+		gameMoveIndex++
 
-			oldGame.push(move)
 
-			setGame(oldGame)
+		if (move[1].toString() !== [-1, -1].toString()) {
+			setGame(prevGame => {
+				const newGame = [...prevGame];
+				newGame.push(move);
+
+				if (newGame.length > 0 && newGame[0][1] && newGame[0][1].length === 0) {
+					newGame.shift();
+				}
+				return newGame;
+			});
+
+			// console.log(game);
+
 		}
-		
-	}, [move])
+
+	}, [move]);
 
 
 	return (
@@ -899,31 +923,59 @@ function App() {
 								Copy moves to clipboard
 							</button>
 						</div>
-						<hr/>
+						<hr />
 						<section className='button-wrapper'>
-								<button className='button button-white'>
-									White: resign
-								</button>
-								<button className='button'>
-									Black: resign
-								</button>
-							</section>
+							<button className='button button-white' onClick={() => {
+								// vitória pretas
+								const oldGame = game
+								oldGame.push([[0, 1], [0, 1]])
+							}}>
+								White: resign
+							</button>
+							<button className='button button-gray' onClick={() => {
+								// vitória pretas
+								const oldGame = game
+								oldGame.push([[1, 0], [1, 0]])
+							}}>
+								Draw
+							</button>
+							<button className='button' onClick={() => {
+								// vitória pretas
+								const oldGame = game
+								oldGame.push([[1, 0], [1, 0]])
+							}}>
+								Black: resign
+							</button>
+							
+						</section>
 
 					</div>
 				</div>
-				<div className={`game-notation-container w-border`}>
-					{
-						gameNotation.map((r, i) => <>
-							{
-								(i + 1) % 2 != 0 ? <span>{(i + 2) / 2}. </span> : ''
-							}
-							<span style={{ marginRight: 7 }} key={i}>{r}</span>
-							{
-								(i + 1) % 2 == 0 ? <br /> : ''
-							}
-						</>)
-					}
-				</div>
+				<section>
+					<div className={`game-notation-container w-border`}>
+						{
+							gameNotation.map((r, i) => <>
+								{
+									(i + 1) % 2 != 0 ? <span>{(i + 2) / 2}. </span> : ''
+								}
+								<span style={{ marginRight: 7 }} key={i}>{r}</span>
+								{
+									(i + 1) % 2 == 0 ? <br /> : ''
+								}
+							</>)
+						}
+					
+					</div>
+					<div class="move-order">
+						<button className='button' onClick={() => goBackGameMove()}>
+						&#8678;
+						</button>
+						<button className='button'  onClick={() => goForwardGameMove()}>
+						&#8680;
+						</button>
+					</div>
+				</section>
+				
 			</div>
 		</main>
 	);
