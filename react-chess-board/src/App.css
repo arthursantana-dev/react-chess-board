@@ -1,8 +1,7 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 
-main{
+main {
 	height: 99vh;
 	display: flex;
 	flex-direction: column;
@@ -38,11 +37,11 @@ main{
 	align-items: center;
 }
 
-.board-square--check{
+.board-square--check {
 	background-color: red !important;
 }
 
-.button-wrapper--row{
+.button-wrapper--row {
 	padding: 0.2rem;
 	justify-content: space-between;
 	width: 27rem;
@@ -50,7 +49,7 @@ main{
 	flex-direction: row;
 }
 
-.button-wrapper{
+.button-wrapper {
 	padding: 0.2rem;
 	/* border: solid 1px gray; */
 	display: flex;
@@ -63,7 +62,7 @@ hr {
 	margin-inline: 2rem;
 }
 
-.button-gray{
+.button-gray {
 	background-color: rgb(170, 170, 170) !important;
 	color: black !important;
 }
@@ -80,14 +79,20 @@ hr {
 	font-family: 'Montserrat', sans-serif;
 }
 
-.button-white{
+.button-white {
 	background-color: white;
 	color: black;
 }
 
 .button:hover {
-	background-color: rgb(21, 10, 117);
-	transition: 0.6s;
+	opacity: 0.8;
+	transition: 0.2s;
+}
+
+.p--selected {
+	background-color: blueviolet;
+	padding: 0.1rem 0.2rem;
+	border-radius: 0.2rem;
 }
 
 .board-square:nth-child(63n-62),
@@ -98,7 +103,7 @@ hr {
 .board-square:nth-child(63n-51),
 .board-square:nth-child(63n-49),
 .board-square:nth-child(63n-47),
-.board-square:nth-child(63n-46), 
+.board-square:nth-child(63n-46),
 .board-square:nth-child(63n-44),
 .board-square:nth-child(63n-42),
 .board-square:nth-child(63n-40),
@@ -121,8 +126,7 @@ hr {
 .board-square:nth-child(63n-8),
 .board-square:nth-child(63n-5),
 .board-square:nth-child(63n-3),
-.board-square:nth-child(63n-1)
-{
+.board-square:nth-child(63n-1) {
 	background-color: rgb(170, 170, 170);
 	color: black;
 }
@@ -135,12 +139,12 @@ img.img-piece {
 	width: 3rem;
 }
 
-.board-column{
+.board-column {
 	display: flex;
-    flex-direction: column;
+	flex-direction: column;
 	font-size: 1rem;
 	text-transform: uppercase;
-	margin-bottom:  1rem;
+	margin-bottom: 1rem;
 	margin-right: 0.2rem;
 }
 
@@ -164,7 +168,8 @@ img.img-piece {
 	display: flex;
 }
 
-.move-order{
+
+.move-order {
 	padding: 1rem;
 	margin-inline: 1rem;
 	display: flex;

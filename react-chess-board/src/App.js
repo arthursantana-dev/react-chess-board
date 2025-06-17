@@ -28,15 +28,39 @@ function App() {
 	const [selectedPieceCoordinates, setSelectedPieceCoordinates] = useState(0)
 	//                                                                 x (row), y (column)
 
+	const [moveIndex, setMoveIndex] = useState(0)
+
 	const [boardCheck, setBoardCheck] = useState([-1, -1])
 
 	const [turn, setTurn] = useState(true) //true - white; false - black
 
 	const [move, setMove] = useState([[], []])
 
-	const [game, setGame] = useState([])
+	const [game, setGame] = useState([[[10, 8, 9, 11, 12, 9, 8, 10],
+	[7, 7, 7, 7, 7, 7, 7, 7],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0, 0, 0],
+	[1, 1, 1, 1, 1, 1, 1, 1],
+	[4, 2, 3, 5, 6, 3, 2, 4]]])
+
+	const [gameImage, setGameImage] = useState([[
+		[10, 8, 9, 11, 12, 9, 8, 10],
+		[7, 7, 7, 7, 7, 7, 7, 7],
+		[0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0],
+		[1, 1, 1, 1, 1, 1, 1, 1],
+		[4, 2, 3, 5, 6, 3, 2, 4]]
+	])
 
 	const [gameNotation, setGameNotation] = useState([])
+
+	let moveState;
+
+	let boardState;
 
 	useEffect(() => {
 		console.log(gameNotation)
@@ -62,8 +86,6 @@ function App() {
 
 		return 0
 	}
-
-	let gameMoveIndex = 0
 
 	function copyGameToClipboard() {
 		let gamePGN = ''
@@ -124,25 +146,59 @@ function App() {
 		newBoard[7][6] = 2;  // wKnight
 		newBoard[7][7] = 4;  // wRook
 
-		// 3. Defina o estado do board apenas uma vez
 		setBoard(newBoard);
 
-		// E certifique-se de limpar a seleção do tabuleiro também
 		clearBoardSelection();
 	}
 
-	function goForwardGameMove(){
+	function goForwardGameMove() {
+
+		if (moveIndex < gameImage.length - 1 && gameImage.length > 0) {
+
+			const pieceValue = gameImage[moveIndex][game[moveIndex][0][0]][[game[moveIndex][0][1]]]
+
+			const start = [game[moveIndex][0][0], game[moveIndex][0][1]]
+			const end = [game[moveIndex][1][0], game[moveIndex][1][1]]
+
+			setTurn(!turn)
+
+			// console.log();
+			// console.log(moveIndex);
+			
+
+			// console.log(game);
+
+			// console.log(moveIndex);
+
+			setMoveIndex(moveIndex + 1)
+
+			// setBoard(gameImage[moveIndex])
+
+			updatePiecePosition(pieceValue, start[0], start[1], end[0], end[1])
+
+
+
+		}
 
 	}
 
-	function goBackGameMove(){
-		console.log(`gmi: ${gameMoveIndex}`);
-		updatePiecePosition(board[game[gameMoveIndex][1][0]][game[gameMoveIndex][1][1]], game[gameMoveIndex][1][0], game[gameMoveIndex][1][1], game[gameMoveIndex][0][0], game[gameMoveIndex][0][1])
-		setTurn(!turn)
-		
-		if(gameMoveIndex > 0){
-			gameMoveIndex--
+	useEffect(() => {
+		console.log(`TURN: ${turn}`);
+
+	}, [turn])
+
+	function goBackGameMove() {
+		// console.log(game);
+
+		setBoard(gameImage[moveIndex])
+
+		setTurn(!turn)		
+
+		if (moveIndex > 0) {
+			setMoveIndex(moveIndex - 1)
 		}
+
+
 	}
 
 	useEffect(() => {
@@ -190,6 +246,8 @@ function App() {
 
 		updateBoardSquare(prevRow, precColumn, 0, board, setBoard, true)
 		updateBoardSquare(newRow, newColumn, pieceValue, board, setBoard)
+
+		boardState = board
 	}
 
 	function cancelSelection() {
@@ -204,7 +262,39 @@ function App() {
 	function noteMove(i, j, pieceValue, isCapture = false, isPawnCapture = false) {
 		const moveStartCoodinates = move[0]
 
+		// boardState = board
+
+		moveState = [moveStartCoodinates, [i, j]]
+
 		setMove([moveStartCoodinates, [i, j]])
+
+		setMoveIndex(moveIndex + 1)
+
+		if (moveState[1].toString() !== [-1, -1].toString()) {
+
+			console.log(`início: ${moveState[0][0]}, ${moveState[0][1]}`);
+			console.log(`fim: ${moveState[1][0]}, ${moveState[1][1]}`);
+
+			const oldGameImage = gameImage
+
+			oldGameImage.push(boardState)
+
+			setGameImage(oldGameImage)
+
+			console.log(gameImage);
+
+			setGame(prevGame => {
+				const newGame = [...prevGame];
+				newGame.push(moveState);
+
+				if (newGame.length > 0 && newGame[0][1] && newGame[0][1].length === 0) {
+					newGame.shift();
+				}
+				return newGame;
+			});
+		}
+
+
 
 		if (!isCapture) {
 			setGameNotation([...gameNotation, `${boardPiecesNotation[pieceValue]}${String.fromCharCode(65 + j).toLowerCase()}${8 - i} `])
@@ -466,6 +556,8 @@ function App() {
 
 	function handleSquareSelection(i, j) {
 
+		if(moveIndex != game.length ) return
+
 		// i -> row
 		// j -> column
 		const boardSquareValue = board[i][j]
@@ -505,10 +597,10 @@ function App() {
 
 			updatePiecePosition(board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]], selectedPieceCoordinates[0], selectedPieceCoordinates[1], i, j)
 
+
 			const pieceValue = boardPieces.indexOf(boardPieces[board[selectedPieceCoordinates[0]][selectedPieceCoordinates[1]]])
 
 			// console.log(`============: ${board[i][j]}`);
-
 
 			console.log("pieceValue " + (pieceValue));
 			if (pieceValue != 1 && pieceValue != 7) {
@@ -835,29 +927,29 @@ function App() {
 
 	}
 
-	useEffect(() => {
-		console.log(`início: ${move[0][0]}, ${move[0][1]}`);
-		console.log(`fim: ${move[1][0]}, ${move[1][1]}`);
+	// useEffect(() => {
+	// 	console.log(`início: ${move[0][0]}, ${move[0][1]}`);
+	// 	console.log(`fim: ${move[1][0]}, ${move[1][1]}`);
 
-		gameMoveIndex++
+	// 	moveIndex++
 
 
-		if (move[1].toString() !== [-1, -1].toString()) {
-			setGame(prevGame => {
-				const newGame = [...prevGame];
-				newGame.push(move);
+	// 	if (move[1].toString() !== [-1, -1].toString()) {
+	// 		setGame(prevGame => {
+	// 			const newGame = [...prevGame];
+	// 			newGame.push(move);
 
-				if (newGame.length > 0 && newGame[0][1] && newGame[0][1].length === 0) {
-					newGame.shift();
-				}
-				return newGame;
-			});
+	// 			if (newGame.length > 0 && newGame[0][1] && newGame[0][1].length === 0) {
+	// 				newGame.shift();
+	// 			}
+	// 			return newGame;
+	// 		});
 
-			// console.log(game);
+	// 		// console.log(game);
 
-		}
+	// 	}
 
-	}, [move]);
+	// }, [move]);
 
 
 	return (
@@ -946,7 +1038,7 @@ function App() {
 							}}>
 								Black: resign
 							</button>
-							
+
 						</section>
 
 					</div>
@@ -958,24 +1050,24 @@ function App() {
 								{
 									(i + 1) % 2 != 0 ? <span>{(i + 2) / 2}. </span> : ''
 								}
-								<span style={{ marginRight: 7 }} key={i}>{r}</span>
+								<span style={{ marginRight: 7 }} className={i+1 == (moveIndex)? "p--selected" : ""} key={i}>{r}</span>
 								{
 									(i + 1) % 2 == 0 ? <br /> : ''
 								}
 							</>)
 						}
-					
+
 					</div>
 					<div class="move-order">
-						<button className='button' onClick={() => goBackGameMove()}>
-						&#8678;
+						<button className={`button`} onClick={() => goBackGameMove()}>
+							&#8678;
 						</button>
-						<button className='button'  onClick={() => goForwardGameMove()}>
-						&#8680;
+						<button className='button' onClick={() => goForwardGameMove()}>
+							&#8680;
 						</button>
 					</div>
 				</section>
-				
+
 			</div>
 		</main>
 	);
