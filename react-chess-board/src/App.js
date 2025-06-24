@@ -160,23 +160,19 @@ function App() {
 			const start = [game[moveIndex][0][0], game[moveIndex][0][1]]
 			const end = [game[moveIndex][1][0], game[moveIndex][1][1]]
 
-			setTurn(!turn)
+			// setTurn(!turn)
 
 			// console.log();
-			// console.log(moveIndex);
-			
 
-			// console.log(game);
-
-			// console.log(moveIndex);
+			console.log(moveIndex);
+			console.log(game);
+			console.log(game[moveIndex]);
 
 			setMoveIndex(moveIndex + 1)
 
 			// setBoard(gameImage[moveIndex])
 
 			updatePiecePosition(pieceValue, start[0], start[1], end[0], end[1])
-
-
 
 		}
 
@@ -192,12 +188,12 @@ function App() {
 
 		setBoard(gameImage[moveIndex])
 
-		setTurn(!turn)		
+		console.log(`mi: ${moveIndex}`);
+
 
 		if (moveIndex > 0) {
 			setMoveIndex(moveIndex - 1)
 		}
-
 
 	}
 
@@ -556,7 +552,7 @@ function App() {
 
 	function handleSquareSelection(i, j) {
 
-		if(moveIndex != game.length ) return
+		if (moveIndex != game.length) return
 
 		// i -> row
 		// j -> column
@@ -1050,7 +1046,7 @@ function App() {
 								{
 									(i + 1) % 2 != 0 ? <span>{(i + 2) / 2}. </span> : ''
 								}
-								<span style={{ marginRight: 7 }} className={i+1 == (moveIndex)? "p--selected" : ""} key={i}>{r}</span>
+								<span style={{ marginRight: 7 }} className={i + 1 == (moveIndex) ? "p--selected" : ""} key={i}>{r}</span>
 								{
 									(i + 1) % 2 == 0 ? <br /> : ''
 								}
