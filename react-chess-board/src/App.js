@@ -113,11 +113,11 @@ function App() {
 		// 1. Crie uma nova matriz vazia para o tabuleiro
 		let newBoard = Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => 0));
 
-		if(lastMove){
+		if (lastMove) {
 			console.log("fim de jogo");
 
 		}
-		
+
 
 		setTurn(true);
 		setGameNotation([]);
@@ -163,6 +163,16 @@ function App() {
 
 	function goForwardGameMove() {
 
+		console.log("********");
+		
+
+		console.log(moveIndex);
+		console.log(gameImage);
+		console.log(game);
+		
+		
+		
+
 		if (moveIndex < gameImage.length - 1 && gameImage.length > 0) {
 
 			const pieceValue = gameImage[moveIndex][game[moveIndex][0][0]][[game[moveIndex][0][1]]]
@@ -196,13 +206,15 @@ function App() {
 	function goBackGameMove() {
 		// console.log(game);
 
-		setBoard(gameImage[moveIndex])
+		if (gameImage.length > 0) {
+			setBoard(gameImage[moveIndex])
 
-		console.log(`mi: ${moveIndex}`);
+			console.log(`mi: ${moveIndex}`);
 
 
-		if (moveIndex > 0) {
-			setMoveIndex(moveIndex - 1)
+			if (moveIndex > 0) {
+				setMoveIndex(moveIndex - 1)
+			}
 		}
 
 	}
@@ -576,9 +588,9 @@ function App() {
 		console.log("caiu");
 		console.log(moveIndex);
 		console.log(game.length);
-		
-		
-		
+
+
+
 
 		if (moveIndex != game.length) return
 
