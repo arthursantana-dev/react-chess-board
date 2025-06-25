@@ -56,7 +56,7 @@ function App() {
 		[4, 2, 3, 5, 6, 3, 2, 4]]
 	])
 
-	const [gameNotation, setGameNotation] = useState([])
+	const [gameNotation, setGameNotation] = useState([]) //1 == vitória brancas; 0 == vitória pretas; 0.5 == empate
 
 	let moveState;
 
@@ -66,7 +66,10 @@ function App() {
 		console.log(gameNotation)
 		// isKingInCheck(0, board)
 		// isKingInCheck(1, board)
+		console.log(gameImage[moveIndex]);
+
 		console.log("-------------------");
+
 
 
 	}, [gameNotation])
@@ -106,14 +109,21 @@ function App() {
 	}
 
 	// Starting position
-	function boardStartingPosition() {
+	function boardStartingPosition(lastMove = "") {
 		// 1. Crie uma nova matriz vazia para o tabuleiro
 		let newBoard = Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => 0));
+
+		if(lastMove){
+			console.log("fim de jogo");
+
+		}
+		
 
 		setTurn(true);
 		setGameNotation([]);
 		setGame([])
 		setBoardCheck([-1, -1])
+		setMoveIndex(0)
 
 		// 2. Modifique esta nova matriz diretamente
 		// Black pieces
@@ -198,7 +208,18 @@ function App() {
 	}
 
 	useEffect(() => {
+
+		(async () => {
+			fetch("http://localhost:3003/")
+				.then(res => res.json())
+				.then(res => console.log(res)
+				)
+		})()
+
 		boardStartingPosition()
+
+
+
 	}, [])
 
 	function updateBoardSquare(row, column, newValue, boardArray, setBoardArray, isPreviousPiece = false) {
@@ -551,6 +572,13 @@ function App() {
 	}
 
 	function handleSquareSelection(i, j) {
+
+		console.log("caiu");
+		console.log(moveIndex);
+		console.log(game.length);
+		
+		
+		
 
 		if (moveIndex != game.length) return
 
@@ -1017,20 +1045,29 @@ function App() {
 								// vitória pretas
 								const oldGame = game
 								oldGame.push([[0, 1], [0, 1]])
+
+								setGameNotation([...gameNotation, "0-1"])
+								boardStartingPosition("0-1")
 							}}>
 								White: resign
 							</button>
 							<button className='button button-gray' onClick={() => {
-								// vitória pretas
 								const oldGame = game
-								oldGame.push([[1, 0], [1, 0]])
+								oldGame.push([[0.5, 0], [0.5, 0]])
+
+								setGameNotation([...gameNotation, "½-½"])
+								boardStartingPosition("½-½")
 							}}>
 								Draw
 							</button>
 							<button className='button' onClick={() => {
-								// vitória pretas
+								// vitória brancas
 								const oldGame = game
 								oldGame.push([[1, 0], [1, 0]])
+
+								setGameNotation([...gameNotation, "1-0"])
+								boardStartingPosition("1-0")
+
 							}}>
 								Black: resign
 							</button>
