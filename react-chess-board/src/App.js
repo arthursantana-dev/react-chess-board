@@ -28,6 +28,7 @@ function App() {
 	const [selectedPieceCoordinates, setSelectedPieceCoordinates] = useState(0)
 	//                                                                 x (row), y (column)
 
+	const [games, setGames] = useState([])
 
 	const [moveIndex, setMoveIndex] = useState(0)
 
@@ -126,9 +127,28 @@ function App() {
 
 			console.log("_______________________");
 
+			const gameToLoad = {
+				notation: JSON.stringify(oldNotation),
+				moves: JSON.stringify(game),
+				game: JSON.stringify(gameImage),
+				gametime: generateDate(),
+				result: lastMove
+			}
+
 			console.log(JSON.stringify(oldNotation));
 			console.log(JSON.stringify(game));
 			console.log(JSON.stringify(gameImage));
+			console.log(lastMove);
+			console.log(generateDate());
+
+			fetch("http://localhost:3003/", {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(gameToLoad)
+			})
+
 
 			console.log("_______________________");
 
@@ -184,13 +204,18 @@ function App() {
 
 		console.log("********");
 
-		if(game[moveIndex][0][0] == game[moveIndex][1][0] &&  game[moveIndex][0][1] == game[moveIndex][1][1]) return
-
-		// console.log(`${game[moveIndex][0][0]} ${game[moveIndex][0][1]}; ${game[moveIndex][1][0]} ${game[moveIndex][1][1]}`);
-
 		console.log(moveIndex);
 		console.log(gameImage);
 		console.log(game);
+
+		if (game.length < 1 || moveIndex >= game.length) return
+
+
+
+		if (game[moveIndex][0][0] == game[moveIndex][1][0] && game[moveIndex][0][1] == game[moveIndex][1][1]) return
+
+
+		// console.log(`${game[moveIndex][0][0]} ${game[moveIndex][0][1]}; ${game[moveIndex][1][0]} ${game[moveIndex][1][1]}`);
 
 		if (moveIndex < game.length && game.length > 0) {
 
@@ -217,6 +242,24 @@ function App() {
 
 	}
 
+	function loadPreviousGame(id) {
+
+		boardStartingPosition()
+
+		console.log(id);
+		// console.log(games);
+
+		games.forEach(g => {
+			if (g.id == id) {
+				setGameNotation(g.notation)
+				setGame(g.moves)
+				setGameImage(g.game)
+				setMoveIndex(0)
+			}
+		});
+
+	}
+
 	useEffect(() => {
 		console.log(`TURN: ${turn}`);
 
@@ -239,15 +282,62 @@ function App() {
 	}
 
 	useEffect(() => {
-
 		(async () => {
 			fetch("http://localhost:3003/")
 				.then(res => res.json())
-				.then(res => console.log(res)
+				.then(games => {
+
+					console.log(games);
+
+					let tempGames = []
+
+					games.forEach(g => {
+						let temp = {
+							id: "",
+							game: "",
+							gametime: "",
+							moves: "",
+							notation: "",
+							result: ""
+						}
+
+						temp.id = g.id
+						temp.game = JSON.parse(g.game)
+						temp.gametime = g.gametime
+						temp.moves = JSON.parse(g.moves)
+						temp.notation = JSON.parse(g.notation)
+						temp.result = g.result
+
+						tempGames.push(temp)
+					});
+
+					// console.log(tempGames);
+
+					setGames(tempGames)
+
+					// if (games.length > 0) {
+
+
+
+					// 	setGameNotation(JSON.parse(games[0].notation))
+					// 	setGame(JSON.parse(games[0].moves))
+					// 	setGameImage(JSON.parse(games[0].game))
+
+					// 	console.log("000000000000");
+
+					// 	// console.log(gameNotation);
+					// 	// console.log(game);
+					// 	// console.log(gameImage);
+					// }
+
+					// boardStartingPosition()
+				}
 				)
 		})()
 
 		boardStartingPosition()
+
+
 
 		/*
 
@@ -259,9 +349,7 @@ function App() {
 	
 		*/
 
-		setGameNotation(["g4 ","f5 ","½-½"])
-		setGame([[[6,6],[4,6]],[[1,5],[3,5]],[[0.5,0],[0.5,0]]])
-		setGameImage([[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1],[4,2,3,5,6,3,2,4]],[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1],[4,2,3,5,6,3,2,4]],[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,0,1],[4,2,3,5,6,3,2,4]]])
+		console.log(generateDate());
 
 
 	}, [])
@@ -1019,12 +1107,26 @@ function App() {
 
 	// }, [move]);
 
+	function generateDate() {
+		const dt = new Date();
+		const padL = (nr, len = 2, chr = `0`) => `${nr}`.padStart(2, chr);
+
+		return `${padL(dt.getDate())}/${padL(dt.getMonth() + 1)}/${dt.getFullYear()} ${padL(dt.getHours())}:${padL(dt.getMinutes())}:${padL(dt.getSeconds())}`
+	}
 
 	return (
 		<main>
 			<div className="App">
 				<section className='previous-games w-border'>
+					{games.map(g => {
+						return (<button className='previous-game' key={g.id} onClick={() => loadPreviousGame(g.id)}>
+							<p>{g.gametime}</p>
 
+							{g.result == "0-1" ? <img src={bKing} className='img-piece--sm' /> : (g.result == "1-0" ? <img src={bKing} className='img-piece--sm' /> : <p className='draw'>½</p>)}
+
+
+						</button>)
+					})}
 				</section>
 				<div className="board-container">
 					<div className="board-column">
@@ -1080,7 +1182,7 @@ function App() {
 						</div>
 						<div class="button-wrapper--row">
 							<button className='button' onClick={() => boardStartingPosition()}>
-								Starting position
+								New game
 							</button>
 							<button className='button' onClick={() => copyGameToClipboard()}>
 								Copy moves to clipboard

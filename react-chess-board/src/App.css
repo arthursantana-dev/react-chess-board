@@ -135,8 +135,36 @@ hr {
 	background-color: rgb(98, 98, 255) !important;
 }
 
+.previous-games {
+	display: flex;
+	gap: 0.3rem;
+	flex-direction: column;
+	height: 26.5rem;
+	overflow-y: scroll;
+}
+
 img.img-piece {
 	width: 3rem;
+}
+
+img.img-piece--sm {
+	width: 2rem;
+	height: 2rem;
+}
+
+.draw{
+	margin-inline: 0.2rem;
+	background-color: rgba(128, 128, 128, 0.435);
+	border-radius: 999rem;
+	padding: 0.1rem;
+}
+
+button.previous-game {
+	display: flex;
+	align-items: center;
+	padding-inline: 1rem;
+	border-radius: 0.2rem;
+	border: 1px solid gray;
 }
 
 .board-column {
