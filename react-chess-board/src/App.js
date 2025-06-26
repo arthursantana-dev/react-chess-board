@@ -28,6 +28,7 @@ function App() {
 	const [selectedPieceCoordinates, setSelectedPieceCoordinates] = useState(0)
 	//                                                                 x (row), y (column)
 
+
 	const [moveIndex, setMoveIndex] = useState(0)
 
 	const [boardCheck, setBoardCheck] = useState([-1, -1])
@@ -74,6 +75,11 @@ function App() {
 
 	}, [gameNotation])
 
+
+	function gameEnd(result) {
+		boardStartingPosition(result);
+	}
+
 	const [pawnPreviousColumn, setPawnPreviousColumn] = useState(0)
 
 	const isPieceWhite = (i, j) => { //1 - white; 0 - black
@@ -114,7 +120,20 @@ function App() {
 		let newBoard = Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => 0));
 
 		if (lastMove) {
-			console.log("fim de jogo");
+			// console.log("fim de jogo");
+			let oldNotation = gameNotation;
+			oldNotation.push(lastMove)
+
+			console.log("_______________________");
+
+			console.log(JSON.stringify(oldNotation));
+			console.log(JSON.stringify(game));
+			console.log(JSON.stringify(gameImage));
+
+			console.log("_______________________");
+
+
+			setGameNotation(oldNotation)
 
 		}
 
@@ -164,16 +183,16 @@ function App() {
 	function goForwardGameMove() {
 
 		console.log("********");
-		
+
+		if(game[moveIndex][0][0] == game[moveIndex][1][0] &&  game[moveIndex][0][1] == game[moveIndex][1][1]) return
+
+		// console.log(`${game[moveIndex][0][0]} ${game[moveIndex][0][1]}; ${game[moveIndex][1][0]} ${game[moveIndex][1][1]}`);
 
 		console.log(moveIndex);
 		console.log(gameImage);
 		console.log(game);
-		
-		
-		
 
-		if (moveIndex < gameImage.length - 1 && gameImage.length > 0) {
+		if (moveIndex < game.length && game.length > 0) {
 
 			const pieceValue = gameImage[moveIndex][game[moveIndex][0][0]][[game[moveIndex][0][1]]]
 
@@ -230,6 +249,19 @@ function App() {
 
 		boardStartingPosition()
 
+		/*
+
+		["g4 ","f5 ","½-½"]
+
+		[[[6,6],[4,6]],[[1,5],[3,5]],[[0.5,0],[0.5,0]]]
+
+		[[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1],[4,2,3,5,6,3,2,4]],[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1],[4,2,3,5,6,3,2,4]],[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,0,1],[4,2,3,5,6,3,2,4]]]
+	
+		*/
+
+		setGameNotation(["g4 ","f5 ","½-½"])
+		setGame([[[6,6],[4,6]],[[1,5],[3,5]],[[0.5,0],[0.5,0]]])
+		setGameImage([[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1],[4,2,3,5,6,3,2,4]],[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1],[4,2,3,5,6,3,2,4]],[[10,8,9,11,12,9,8,10],[7,7,7,7,7,7,7,7],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,0,1],[4,2,3,5,6,3,2,4]]])
 
 
 	}, [])
@@ -991,6 +1023,9 @@ function App() {
 	return (
 		<main>
 			<div className="App">
+				<section className='previous-games w-border'>
+
+				</section>
 				<div className="board-container">
 					<div className="board-column">
 						<p>8</p>
@@ -1058,8 +1093,7 @@ function App() {
 								const oldGame = game
 								oldGame.push([[0, 1], [0, 1]])
 
-								setGameNotation([...gameNotation, "0-1"])
-								boardStartingPosition("0-1")
+								gameEnd("0-1")
 							}}>
 								White: resign
 							</button>
@@ -1067,8 +1101,9 @@ function App() {
 								const oldGame = game
 								oldGame.push([[0.5, 0], [0.5, 0]])
 
-								setGameNotation([...gameNotation, "½-½"])
-								boardStartingPosition("½-½")
+								// setGameNotation([...gameNotation, "½-½"])
+								// boardStartingPosition("½-½")
+								gameEnd("½-½")
 							}}>
 								Draw
 							</button>
@@ -1077,8 +1112,7 @@ function App() {
 								const oldGame = game
 								oldGame.push([[1, 0], [1, 0]])
 
-								setGameNotation([...gameNotation, "1-0"])
-								boardStartingPosition("1-0")
+								gameEnd("1-0")
 
 							}}>
 								Black: resign
